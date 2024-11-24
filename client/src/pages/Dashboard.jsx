@@ -41,12 +41,14 @@ const Dashboard = () => {
 
   function handleSubmit(e) {
     e.preventDefault();
-    console.log(category);
-    console.log(amount);
-    console.log(description);
-    console.log(transType);
-    console.log(time);
-    console.log(date);
+    console.log({
+      category,
+      amount,
+      description,
+      transType,
+      time,
+      date,
+    });
   }
 
   return (
@@ -56,13 +58,12 @@ const Dashboard = () => {
         <header className="flex gap-2 sm:flex-row flex-col justify-between md:items-center w-full">
           <h1 className="text-4xl font-semibold">Dashboard</h1>
           <div className="flex justify-end w-full">
-            <Dialog className="bg-red-400">
+            <Dialog className="">
               <motion.div whileTap={{ scale: 0.95 }} className="w-max">
                 <DialogTrigger>
-                  <p
-                    // label={"New Transaction"}
-                    className="min-w-[120px] text-sm md:text-md px-2 md:px-4 py-2 rounded-md bg-black font-semibold !px-6 text-white hover:bg-black-2"
-                  >New Transaction</p>
+                  <p className="min-w-[120px] text-sm md:text-md md:px-4 py-2 rounded-md bg-black font-semibold !px-6 text-white hover:bg-black-2">
+                    New Transaction
+                  </p>
                 </DialogTrigger>
               </motion.div>
               <DialogContent>
@@ -91,7 +92,10 @@ const Dashboard = () => {
                         </SelectTrigger>
                         <SelectContent>
                           {categories?.map((item) => (
-                            <SelectItem key={item.id} value={item.name}>
+                            <SelectItem
+                              key={item.id}
+                              value={item.icon + " " + item.name}
+                            >
                               {item.icon} {item.name}
                             </SelectItem>
                           ))}
