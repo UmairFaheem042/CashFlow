@@ -6,6 +6,8 @@ import Dashboard from "./pages/Dashboard";
 import AuthSignIn from "./pages/AuthSignIn";
 import AuthSignUp from "./pages/AuthSignUp";
 import ErrorBoundary from "./components/ErrorBoundary";
+import AllTransactions from "./pages/AllTransactions";
+import Settings from "./pages/Settings";
 
 const App = () => {
   return (
@@ -14,6 +16,8 @@ const App = () => {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/transactions" element={<AllTransactions />} />
+        <Route path="/settings" element={<Settings />} />
         <Route path="/sign-in" element={<AuthSignIn />} />
         <Route path="/sign-up" element={<AuthSignUp />} />
       </Routes>
