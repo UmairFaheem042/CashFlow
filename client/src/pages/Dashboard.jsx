@@ -32,11 +32,13 @@ const Dashboard = () => {
   const [transType, setTransType] = useState("expense");
 
   const categories = [
-    { id: 1, name: "Transport", icon: "🚌" },
-    { id: 2, name: "Meal", icon: "🍴" },
-    { id: 3, name: "Gadget", icon: "💻" },
-    { id: 4, name: "Entertainment", icon: "🍿" },
-    { id: 5, name: "Study", icon: "📖" },
+    { id: 1, name: "Entertainment", icon: "🍿" },
+    { id: 2, name: "Food & Groceries", icon: "🍴" },
+    { id: 3, name: "Health & Medical", icon: "🩺" },
+    { id: 4, name: "Housing", icon: "🏠" },
+    { id: 5, name: "Salary", icon: "💵" },
+    { id: 6, name: "Shopping", icon: "🛒" },
+    { id: 7, name: "Transportation", icon: "🚌" },
   ];
 
   function handleSubmit(e) {
@@ -99,10 +101,10 @@ const Dashboard = () => {
                               {item.icon} {item.name}
                             </SelectItem>
                           ))}
-                          <Button
+                          {/* <Button
                             label={"+ Category"}
                             className=" w-full text-gray-300"
-                          />
+                          /> */}
                         </SelectContent>
                       </Select>
                     </div>
