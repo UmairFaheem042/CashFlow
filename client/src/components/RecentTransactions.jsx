@@ -1,18 +1,18 @@
 import React, { useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "./ui/select";
 
 const RecentTransactions = () => {
   const [card, setCard] = useState("card-1");
   return (
     <div className="border rounded-md p-2 h-full md:w-[300px] flex flex-col justify-between ">
       <h1 className="text-lg font-bold">Recent Transactions</h1>
-      <Select  value={card} onValueChange={(value) => setCard(value)}>
+      {/* <Select  value={card} onValueChange={(value) => setCard(value)}>
         <SelectTrigger  id="category" className="py-[0.6rem] outline-none">
           <SelectValue placeholder="Choose Card" />
         </SelectTrigger>
@@ -21,7 +21,7 @@ const RecentTransactions = () => {
           <SelectItem value="card-2">Card 2</SelectItem>
           <SelectItem value="card-3">Card 3</SelectItem>
         </SelectContent>
-      </Select>
+      </Select> */}
       <ul className="mt-4 flex flex-col gap-3 overflow-y-scroll">
         <li className="flex justify-between items-center">
           🚌 Transport{" "}
