@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const {
   createCategory,
-  getCategory,
   getAllCategories,
   deleteCategory,
 } = require("../controllers/categoryController");
@@ -10,11 +9,8 @@ const {
 // These all routes will be authenticated first
 router.post("/:userId/createCategory", createCategory);
 
-router.get("/:userId/getCategory", getCategory);
+router.get("/:userId/getAllCategories", getAllCategories);
 
-router.get("/:userId/allCategories", getAllCategories);
-
-// when deleting category, it should not delete transaction, in place of category it should fill Others
-router.delete("/:userId/deleteCategory", deleteCategory);
+router.delete("/:userId/deleteCategory/:categoryId", deleteCategory);
 
 module.exports = router;

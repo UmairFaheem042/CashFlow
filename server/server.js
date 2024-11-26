@@ -14,7 +14,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/transaction", transactionRoutes);
 app.use("/api/category", categoryRoutes);
 
-// connectDB()
+connectDB()
 
 app.listen(process.env.PORT, () => {
   console.log("Server is listening");
