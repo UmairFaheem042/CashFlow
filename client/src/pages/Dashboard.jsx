@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Sidebar from "../components/Sidebar";
 import Button from "../components/Button";
@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useParams } from "react-router-dom";
 
 const Dashboard = () => {
   const [type, setType] = useState("all");
@@ -29,29 +30,148 @@ const Dashboard = () => {
   const [category, setCategory] = useState("");
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
-  const [transType, setTransType] = useState("expense");
+  const [transType, setTransType] = useState("Expense");
 
-  const categories = [
-    { id: 1, name: "Entertainment", icon: "🍿" },
-    { id: 2, name: "Food & Groceries", icon: "🍴" },
-    { id: 3, name: "Health & Medical", icon: "🩺" },
-    { id: 4, name: "Housing", icon: "🏠" },
-    { id: 5, name: "Salary", icon: "💵" },
-    { id: 6, name: "Shopping", icon: "🛒" },
-    { id: 7, name: "Transportation", icon: "🚌" },
-  ];
+  const [recentTransactions, setRecentTransactions] = useState([]);
 
-  function handleSubmit(e) {
+  const [categories, setCategories] = useState([]);
+  const [creating, setCreating] = useState(false);
+  const [name, setName] = useState("");
+  const [icon, setIcon] = useState("");
+
+  const [loading, setLoading] = useState(false);
+
+  const { userId } = useParams();
+
+  async function handleSubmit(e) {
     e.preventDefault();
-    console.log({
-      category,
-      amount,
-      description,
-      transType,
-      time,
-      date,
-    });
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `http://localhost:3000/api/transaction/${userId}/createTransaction`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            category,
+            amount,
+            description,
+            transType,
+            date,
+            time,
+          }),
+        }
+      );
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error:", errorData || "Transaction creation failed");
+        return;
+      }
+      fetchRecentTransactions();
+      setLoading(false);
+      setCategory("");
+      setAmount("");
+      setDescription("");
+      setTransType("Expense");
+      setDate("");
+      setTime("");
+    } catch (error) {
+      setLoading(false);
+      console.error("An error occurred:", error);
+    }
   }
+
+  async function createCategory() {
+    try {
+      setCreating(true);
+      const response = await fetch(
+        `http://localhost:3000/api/category/${userId}/createCategory`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name,
+            icon,
+          }),
+        }
+      );
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error:", errorData || "Category creation failed");
+        return;
+      }
+      setCategories((prev) => [
+        ...prev,
+        { name, icon }, // Add the new category to the list
+      ]);
+
+      setName(""); // Clear input fields
+      setIcon("");
+      setCreating(false);
+    } catch (error) {
+      setCreating(false);
+      console.error("An error occurred:", error);
+    }
+  }
+
+  async function fetchCategory() {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/category/${userId}/getAllCategories`
+      );
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error(
+          "Error:",
+          errorData || "Error while fetching recent transactions"
+        );
+        return;
+      }
+      const data = await response.json();
+      setCategories((prev) => [...prev, ...data.categories]);
+    } catch (error) {
+      console.error("An error occurred:", error);
+    }
+  }
+
+  async function fetchRecentTransactions() {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/transaction/${userId}/getRecentTransactions`
+      );
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error(
+          "Error:",
+          errorData || "Error while fetching recent transactions"
+        );
+        return;
+      }
+      const data = await response.json();
+      setRecentTransactions((prev) => [...prev, ...data.transactions]);
+    } catch (error) {
+      console.error("An error occurred:", error);
+    }
+  }
+
+  useEffect(() => {
+    fetchRecentTransactions();
+  }, []);
+
+  useEffect(() => {
+    fetchCategory();
+  }, []);
+
+  if (loading)
+    return (
+      <div>
+        <p>Loading...</p>
+      </div>
+    );
 
   return (
     <div className="mt-4 relative max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[calc(100dvh-5.1rem)] flex-1 flex md:flex-row flex-col items-center md:items-start gap-6 md:gap-6 pb-10">
@@ -60,6 +180,7 @@ const Dashboard = () => {
         <header className="flex gap-2 sm:flex-row flex-col justify-between md:items-center w-full">
           <h1 className="text-4xl font-semibold">Dashboard</h1>
           <div className="flex justify-end w-full">
+            {/* CREATE TRANSACTION */}
             <Dialog className="">
               <motion.div whileTap={{ scale: 0.95 }} className="w-max">
                 <DialogTrigger>
@@ -93,18 +214,56 @@ const Dashboard = () => {
                           <SelectValue placeholder="Choose One" />
                         </SelectTrigger>
                         <SelectContent>
-                          {categories?.map((item) => (
-                            <SelectItem
-                              key={item.id}
-                              value={item.icon + " " + item.name}
-                            >
-                              {item.icon} {item.name}
-                            </SelectItem>
-                          ))}
-                          {/* <Button
-                            label={"+ Category"}
-                            className=" w-full text-gray-300"
-                          /> */}
+                          {!creating && (
+                            <>
+                              {categories?.map((item) => (
+                                <SelectItem
+                                  key={item._id}
+                                  value={item.icon + " " + item.name}
+                                >
+                                  {item.icon} {item.name}
+                                </SelectItem>
+                              ))}
+                              <Button
+                                onClick={() => setCreating(true)}
+                                label={"+ Category"}
+                                className="hover:bg-gray-100  w-full text-gray-300"
+                              />
+                            </>
+                          )}
+
+                          {creating && (
+                            <form className="flex flex-col gap-2 w-full">
+                              <input
+                                type="text"
+                                placeholder="Enter Name"
+                                className="outline-none p-2 border rounded-md placeholder:font-thin placeholder:text-sm"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                required
+                              />
+                              <input
+                                type="text"
+                                placeholder="Choose Icon"
+                                className="outline-none p-2 border rounded-md placeholder:font-thin placeholder:text-sm"
+                                required
+                                value={icon}
+                                onChange={(e) => setIcon(e.target.value)}
+                              />
+                              <div className="flex gap-2">
+                                <Button
+                                  label={"+ Create"}
+                                  className="bg-black-2 text-white"
+                                  onClick={createCategory}
+                                />
+                                <Button
+                                  label={"Cancel"}
+                                  onClick={() => setCreating(false)}
+                                  className="border"
+                                />
+                              </div>
+                            </form>
+                          )}
                         </SelectContent>
                       </Select>
                     </div>
@@ -161,13 +320,13 @@ const Dashboard = () => {
                       className="flex gap-10"
                     >
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="expense" id="expense" />
+                        <RadioGroupItem value="Expense" id="expense" />
                         <label htmlFor="expense" className="cursor-pointer">
                           Expense
                         </label>
                       </div>
                       <div className="flex items-center space-x-2 cursor-pointer">
-                        <RadioGroupItem value="income" id="income" />
+                        <RadioGroupItem value="Income" id="income" />
                         <label htmlFor="income" className="cursor-pointer">
                           Income
                         </label>
@@ -284,7 +443,10 @@ const Dashboard = () => {
           <BarChart />
 
           {/* recent transactions */}
-          <RecentTransactions />
+          <RecentTransactions
+            recentTransactions={recentTransactions}
+            categories={categories}
+          />
         </div>
       </main>
     </div>

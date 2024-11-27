@@ -1,14 +1,39 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "../components/Button";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 
 const AuthSignUp = () => {
   const navigate = useNavigate();
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    navigate("/dashboard");
+    try {
+      const response = await fetch("http://localhost:3000/api/user/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fullName,
+          email,
+          password,
+        }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error:", errorData || "Signup failed");
+        return;
+      }
+
+      const data = await response.json();
+      navigate(`/dashboard/${data.createdUser._id}`);
+    } catch (error) {
+      console.error("An error occurred:", error);
+    }
   }
   return (
     <div className="max-w-screen-xl mx-auto p-2 min-h-[calc(100dvh-4rem)] flex-1 flex flex-col gap-2 items-center justify-center">
@@ -31,6 +56,8 @@ const AuthSignUp = () => {
             type="text"
             placeholder="Umair"
             id="fullname"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
             className="outline-none p-2 border rounded-md  placeholder:font-thin placeholder:text-sm"
           />
         </div>
@@ -45,6 +72,8 @@ const AuthSignUp = () => {
             type="email"
             placeholder="umair@example.com"
             id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="outline-none p-2 border rounded-md placeholder:font-thin placeholder:text-sm"
           />
         </div>
@@ -59,10 +88,12 @@ const AuthSignUp = () => {
             type="password"
             placeholder="123321"
             id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             className="outline-none p-2 border rounded-md placeholder:font-thin placeholder:text-sm"
           />
         </div>
-        <div className="flex flex-col gap-1">
+        {/* <div className="flex flex-col gap-1">
           <label
             className="cursor-pointer text-[0.9rem] md:text-[1rem]"
             htmlFor="confirmpassword"
@@ -75,7 +106,7 @@ const AuthSignUp = () => {
             id="confirmpassword"
             className="outline-none p-2 border rounded-md placeholder:font-thin placeholder:text-sm"
           />
-        </div>
+        </div> */}
         <motion.div
           whileTap={{ scale: 0.95 }}
           className="mt-2 flex items-center w-max"

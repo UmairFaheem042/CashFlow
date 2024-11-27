@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import {
   Table,
@@ -18,109 +18,57 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "../components/ui/pagination";
+import { useParams } from "react-router-dom";
 
 const AllTransactions = () => {
-  const transactions = [
-    {
-      id: 1,
-      category: "🚌 Transport",
-      description: "Bus fare to the office",
-      type: "expense",
-      time: "08:00 AM",
-      date: "10-11-2024",
-      amount: "50",
-    },
-    {
-      id: 2,
-      category: "🍽️ Food",
-      description: "Lunch at the cafe",
-      type: "expense",
-      time: "12:45 PM",
-      date: "11-11-2024",
-      amount: "15",
-    },
-    {
-      id: 3,
-      category: "🏠 Rent",
-      description: "Monthly rent payment for apartment",
-      type: "expense",
-      time: "03:00 PM",
-      date: "01-12-2024",
-      amount: "800",
-    },
-    {
-      id: 4,
-      category: "💻 Entertainment",
-      description: "Online streaming subscription",
-      type: "expense",
-      time: "06:00 PM",
-      date: "15-12-2024",
-      amount: "10",
-    },
-    {
-      id: 5,
-      category: "🛒 Shopping",
-      description: "Purchase of new clothes",
-      type: "expense",
-      time: "04:30 PM",
-      date: "20-11-2024",
-      amount: "120",
-    },
-    {
-      id: 6,
-      category: "🍴 Food & Groceries",
-      description: "Bought Tinde",
-      type: "expense",
-      time: "07:32 PM",
-      date: "24-12-2024",
-      amount: "120",
-    },
-    {
-      id: 7,
-      category: "🛒 Shopping",
-      description: "Purchase of new clothes",
-      type: "expense",
-      time: "04:30 PM",
-      date: "20-11-2024",
-      amount: "120",
-    },
-    {
-      id: 6,
-      category: "🍴 Food & Groceries",
-      description: "Bought Tinde",
-      type: "expense",
-      time: "07:32 PM",
-      date: "24-12-2024",
-      amount: "120",
-    },
-    {
-      id: 7,
-      category: "🛒 Shopping",
-      description: "Purchase of new clothes",
-      type: "expense",
-      time: "04:30 PM",
-      date: "20-11-2024",
-      amount: "120",
-    },
-    {
-      id: 6,
-      category: "🍴 Food & Groceries",
-      description: "Bought Tinde",
-      type: "income",
-      time: "07:32 PM",
-      date: "24-12-2024",
-      amount: "120",
-    },
-    {
-      id: 7,
-      category: "🛒 Shopping",
-      description: "Purchase of new clothes",
-      type: "expense",
-      time: "04:30 PM",
-      date: "20-11-2024",
-      amount: "120",
-    },
-  ];
+  const [transactions, setTransactions] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const { userId } = useParams();
+
+  useEffect(() => {
+    async function fetchAllTransaction() {
+      try {
+        // Fetch Transactions
+        const transactionsResponse = await fetch(
+          `http://localhost:3000/api/transaction/${userId}/getAllTransactions`
+        );
+        if (!transactionsResponse.ok) {
+          const errorData = await transactionsResponse.json();
+          console.error(
+            "Error fetching transactions:",
+            errorData || "Unknown error"
+          );
+          return;
+        }
+        const transactionsData = await transactionsResponse.json();
+        setTransactions(transactionsData.transactions);
+
+        // Fetch Categories
+        const categoriesResponse = await fetch(
+          `http://localhost:3000/api/category/${userId}/getAllCategories`
+        );
+        if (!categoriesResponse.ok) {
+          const errorData = await categoriesResponse.json();
+          console.error(
+            "Error fetching categories:",
+            errorData || "Unknown error"
+          );
+          return;
+        }
+        const categoriesData = await categoriesResponse.json();
+        setCategories(categoriesData.categories);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    }
+    fetchAllTransaction();
+  }, []);
+
+  const getCategoryName = (categoryId) => {
+    const category = categories.find((cat) => cat._id === categoryId);
+    return category ? `${category.icon} ${category.name}` : "Others";
+  };
+
   return (
     <div className='mt-4 relative max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[calc(100dvh-5.1rem)] flex-1 flex md:flex-row flex-col items-center md:items-start gap-6 md:gap-6 pb-10"'>
       <Sidebar tab={"transactions"} />
@@ -131,31 +79,33 @@ const AllTransactions = () => {
 
         <div className="flex-1 border-2 rounded-lg mt-6 overflow-y-scroll max-h-[70vh]">
           <Table className="">
-            {/* <TableCaption>A list of your recent transactions</TableCaption> */}
             <TableHeader>
               <TableRow>
                 <TableHead className="">Category</TableHead>
                 <TableHead className="">Description</TableHead>
-                {/* <TableHead className="text-center">Type</TableHead> */}
-                {/* <TableHead className="text-center">Time</TableHead> */}
                 <TableHead className="text-center">Date</TableHead>
                 <TableHead className="text-center">Amount</TableHead>
-                {/* <TableHead className="text-right">Action</TableHead> */}
               </TableRow>
             </TableHeader>
             <TableBody>
               {transactions?.map((item) => (
-                <TableRow key={item.id}>
+                <TableRow key={item._id}>
                   <TableCell className="font-medium text-left">
-                    {item.category}
+                    {getCategoryName(item.category)}
                   </TableCell>
                   <TableCell className="max-w-[300px]">
                     {item.description}
                   </TableCell>
-                  {/* <TableCell className="text-center">{item.type}</TableCell> */}
-                  {/* <TableCell className="text-center">{item.time}</TableCell> */}
                   <TableCell className="text-center">{item.date}</TableCell>
-                  <TableCell className={`text-center font-semibold ${item.type === "expense" ? "text-red-600" : "text-green-600"}`}>{item.type === "expense" ? "-" : "+"} ₹{item.amount}</TableCell>
+                  <TableCell
+                    className={`text-center font-semibold ${
+                      item.type === "Expense"
+                        ? "text-red-600"
+                        : "text-green-600"
+                    }`}
+                  >
+                    {item.type === "Expense" ? "-" : "+"} ₹{item.amount}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

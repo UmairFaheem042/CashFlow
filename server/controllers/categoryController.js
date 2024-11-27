@@ -1,5 +1,4 @@
 const User = require("../models/user.model");
-const Transaction = require("../models/transaction.model");
 const Category = require("../models/category.model");
 
 exports.createCategory = async (req, res) => {
@@ -37,9 +36,18 @@ exports.createCategory = async (req, res) => {
 exports.getAllCategories = async (req, res) => {
   const { userId } = req.params;
   try {
+    // const user = await User.findById(userId).populate({
+    //   path: "categories",
+    //   options: { sort: { name: 1 } },
+    // });
+
     const user = await User.findById(userId).populate({
       path: "categories",
       options: { sort: { name: 1 } },
+      populate: {
+        path: "transactions", // Populate transactions within categories
+        options: { sort: { date: -1 } }, // Optionally sort transactions by date (descending)
+      },
     });
 
     if (!user) {

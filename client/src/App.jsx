@@ -15,11 +15,13 @@ const App = () => {
       <Header />
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/transactions" element={<AllTransactions />} />
-        <Route path="/settings" element={<Settings />} />
         <Route path="/sign-in" element={<AuthSignIn />} />
         <Route path="/sign-up" element={<AuthSignUp />} />
+
+        <Route path="/dashboard/:userId" element={<Dashboard />} />
+        <Route path="/transactions/:userId" element={<AllTransactions />} />
+        <Route path="/settings/:userId" element={<Settings />} />
+        
       </Routes>
     </BrowserRouter>
   );

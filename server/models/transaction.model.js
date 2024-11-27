@@ -18,7 +18,7 @@ const TransactionSchema = new mongoose.Schema(
     },
     transType: {
       type: String,
-      enum: ["expense", "income"],
+      enum: ["Expense", "Income"],
       required: true,
     },
     amount: {
@@ -27,8 +27,12 @@ const TransactionSchema = new mongoose.Schema(
       min: 0,
     },
     date: {
-      type: Date,
-      default: Date.now,
+      type: String,
+      required: true,
+    },
+    time: {
+      type: String,
+      required: true,
     },
   },
   {

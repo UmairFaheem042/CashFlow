@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 const Sidebar = ({ tab }) => {
   const navigate = useNavigate();
   // const [currTab, setCurrTab] = useState("home");
+  const { userId } = useParams();
   return (
     <aside className="border flex flex-row md:flex-col items-center md:justify-center md:gap-6 gap-10 p-2 md:p-4 rounded-lg h-min w-max">
       <motion.div
@@ -14,7 +15,7 @@ const Sidebar = ({ tab }) => {
         }`}
         onClick={() => {
           // setCurrTab("home");
-          navigate("/dashboard");
+          navigate(`/dashboard/${userId}`);
         }}
       >
         <i className="ri-home-line text-2xl cursor-pointer" />
@@ -28,7 +29,7 @@ const Sidebar = ({ tab }) => {
         }`}
         onClick={() => {
           // setCurrTab("transactions");
-          navigate("/transactions");
+          navigate(`/transactions/${userId}`);
         }}
       >
         <i className="ri-exchange-dollar-line text-2xl cursor-pointer" />
@@ -42,7 +43,7 @@ const Sidebar = ({ tab }) => {
         }`}
         onClick={() => {
           // setCurrTab("settings");
-          navigate("/settings");
+          navigate(`/settings/${userId}`);
         }}
       >
         <i className="ri-settings-line text-2xl cursor-pointer" />

@@ -24,15 +24,15 @@ exports.createTransaction = async (req, res) => {
       });
     }
 
-    const transactionDate = new Date(date);
+    const parsedAmount = Number(amount);
 
     const transaction = await Transaction.create({
       userId,
       category: categoryDoc._id,
-      amount,
+      amount: parsedAmount,
       description,
       transType,
-      date: transactionDate,
+      date,
       time,
     });
 
@@ -64,6 +64,34 @@ exports.getAllTransactions = async (req, res) => {
       });
     }
     const transactions = await Transaction.find({ userId });
+    res.status(200).json({
+      success: true,
+      message: "Transactions retrieved successfully",
+      transactions,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching transactions",
+      error: error.message,
+    });
+  }
+};
+
+exports.getRecentTransactions = async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    const transactions = await Transaction.find({ userId })
+      .sort({ createdAt: -1 })
+      .limit(10);
+      
     res.status(200).json({
       success: true,
       message: "Transactions retrieved successfully",

@@ -73,13 +73,14 @@ exports.signIn = async (req, res) => {
     // Save token in a secure cookie
     res.cookie("token", token, {
       httpOnly: true, // Prevent access to cookie via JavaScript
-        secure: process.env.NODE_ENV === "production", // Use secure flag in production
+      secure: process.env.NODE_ENV === "production", // Use secure flag in production
       maxAge: 18000000, // 5 hours
     });
 
     res.status(200).json({
       success: true,
       message: "User logged in successfully",
+      id: user._id,
     });
   } catch (error) {
     res.status(500).json({

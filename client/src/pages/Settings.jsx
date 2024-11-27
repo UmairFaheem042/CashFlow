@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Button from "@/components/Button";
 import {
@@ -9,26 +9,79 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
+import { useParams } from "react-router-dom";
 
 const Settings = () => {
   const [icon, setIcon] = useState("");
   const [name, setName] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const [categories, setCategories] = useState([
-    { id: 1, name: "Entertainment", icon: "🍿" },
-    { id: 2, name: "Food & Groceries", icon: "🍴" },
-    { id: 3, name: "Health & Medical", icon: "🩺" },
-    { id: 4, name: "Housing", icon: "🏠" },
-    { id: 5, name: "Salary", icon: "💵" },
-    { id: 6, name: "Shopping", icon: "🛒" },
-    { id: 7, name: "Transportation", icon: "🚌" },
-  ]);
+  const [categories, setCategories] = useState([]);
+  const { userId } = useParams();
 
-  function handleSubmitCategory(e) {
+  async function handleSubmitCategory(e) {
     e.preventDefault();
-    const newCategory = { id: categories.length + 1, name, icon };
-    setCategories((prev) => [...prev, newCategory]);
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `http://localhost:3000/api/category/${userId}/createCategory`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name,
+            icon,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (response.ok) {
+        setLoading(false);
+        fetchCategories();
+        setName("");
+        setIcon("");
+      } else {
+        setLoading(false);
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error("Error creating category:", error);
+    }
   }
+  async function fetchCategories() {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/category/${userId}/getAllCategories`
+      );
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error(
+          "Error:",
+          errorData || "Error while fetching recent transactions"
+        );
+        return;
+      }
+      const data = await response.json();
+
+      setCategories(data.categories);
+    } catch (error) {
+      console.error("An error occurred:", error);
+    }
+  }
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  if (loading)
+    return (
+      <div>
+        <p>Loading...</p>
+      </div>
+    );
 
   return (
     <div className='mt-4 relative max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[calc(100dvh-5.1rem)] flex-1 flex md:flex-row flex-col items-center md:items-start gap-6 md:gap-6 pb-10"'>
@@ -37,26 +90,31 @@ const Settings = () => {
         <header className="flex gap-2 sm:flex-row flex-col justify-between md:items-center w-full">
           <h1 className="text-4xl font-semibold">Settings</h1>
         </header>
-        <div className="text-center mt-8 rounded-lg flex md:flex-row flex-col gap-2 border p-4">
-          <div className=" flex overflow-x-scroll flex-1  gap-2">
-            {categories &&
-              categories?.map((item) => (
-                <div
-                  key={item.id}
-                  className="min-w-[150px] bg-gray-100 cursor-pointer rounded-md py-4 px-2  flex flex-col gap-1 items-center"
-                >
-                  <span className="text-sm">{item.name}</span>
-                  <span className="text-3xl">{item.icon}</span>
-                </div>
-              ))}
+        <div className="text-center mt-8 rounded-lg flex bg-red  md:flex-row flex-col gap-2 border p-4">
+          <div className=" flex overflow-x-scroll hide-scrollbar h-[100px] bg-red flex-1  gap-2">
+            <>
+              {categories &&
+                categories?.map((item) => (
+                  <div
+                    key={item._id}
+                    className="min-w-[150px] bg-gray-100 cursor-pointer rounded-md py-4 px-2  flex flex-col gap-1 items-center"
+                  >
+                    <span className="text-sm">{item.name}</span>
+                    <span className="text-3xl">{item.icon}</span>
+                  </div>
+                ))}
+            </>
+
+            {/* <div className=" w-full flex items-center justify-center">
+              <p>Loading...</p>
+            </div> */}
           </div>
 
           <Dialog>
             <motion.div whileTap={{ scale: 0.95 }} className="w-max">
-              <DialogTrigger className="min-w-[100px] h-full ">
-                <p className="border rounded-md flex items-center justify-center h-full px-6 py-2 ">
-                  + Category
-                </p>
+              <DialogTrigger className="min-w-[100px] border rounded-md flex items-center justify-center h-full px-6 py-2">
+                {/* <p className=""> */}+ Category
+                {/* </p> */}
               </DialogTrigger>
             </motion.div>
             <DialogContent>

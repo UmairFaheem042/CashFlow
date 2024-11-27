@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const LandingPage = () => {
-  // throw new Error("Intentional error!");
   return (
     <div className="max-w-screen-lg mx-auto p-2 min-h-[calc(100dvh-4rem)] flex-1 flex flex-col gap-2 items-center justify-center">
       <h1 className="font-bold text-2xl sm:text-3xl md:text-5xl text-center">
