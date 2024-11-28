@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import Sidebar from "../components/Sidebar";
 import Button from "../components/Button";
 import RecentTransactions from "../components/RecentTransactions";
-import BarChart from "../components/BarChart";
 import {
   Dialog,
   DialogContent,
@@ -22,8 +21,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useParams } from "react-router-dom";
+import Visualization from "@/components/Visualization";
 
 const Dashboard = () => {
+  const [balance, setBalance] = useState(0);
+  const [income, setIncome] = useState(0);
+  const [expense, setExpense] = useState(0);
+
   const [type, setType] = useState("all");
   const [time, setTime] = useState("");
   const [date, setDate] = useState("");
@@ -69,6 +73,7 @@ const Dashboard = () => {
         console.error("Error:", errorData || "Transaction creation failed");
         return;
       }
+      fetchAllTransactions();
       fetchRecentTransactions();
       setLoading(false);
       setCategory("");
@@ -132,7 +137,7 @@ const Dashboard = () => {
         return;
       }
       const data = await response.json();
-      setCategories((prev) => [...prev, ...data.categories]);
+      setCategories(data.categories);
     } catch (error) {
       console.error("An error occurred:", error);
     }
@@ -158,8 +163,44 @@ const Dashboard = () => {
     }
   }
 
+  async function fetchAllTransactions() {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/transaction/${userId}/getAllTransactions`
+      );
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error(
+          "Error:",
+          errorData || "Error while fetching recent transactions"
+        );
+        return;
+      }
+      const data = await response.json();
+      let newIncome = 0;
+      let newExpense = 0;
+      // let newBalance = 0;
+      data.transactions.forEach((transaction) => {
+        if (transaction.transType === "Income") {
+          newIncome += transaction.amount;
+          // newBalance += transaction.amount;
+        } else if (transaction.transType === "Expense") {
+          newExpense += transaction.amount;
+          // newBalance -= transaction.amount;
+        }
+      });
+
+      setIncome(newIncome);
+      setExpense(newExpense);
+      // setBalance(newBalance);
+    } catch (error) {
+      console.error("An error occurred:", error);
+    }
+  }
+
   useEffect(() => {
     fetchRecentTransactions();
+    fetchAllTransactions();
   }, []);
 
   useEffect(() => {
@@ -174,7 +215,7 @@ const Dashboard = () => {
     );
 
   return (
-    <div className="mt-4 relative max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[calc(100dvh-5.1rem)] flex-1 flex md:flex-row flex-col items-center md:items-start gap-6 md:gap-6 pb-10">
+    <div className="my-3 relative max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[calc(100dvh-5.5rem)] flex-1 flex md:flex-row flex-col items-center md:items-start gap-6 md:gap-6 ">
       <Sidebar tab={"dashboard"} />
       <main className="w-full flex-1">
         <header className="flex gap-2 sm:flex-row flex-col justify-between md:items-center w-full">
@@ -213,7 +254,7 @@ const Dashboard = () => {
                         <SelectTrigger id="category" className="py-[0.6rem]">
                           <SelectValue placeholder="Choose One" />
                         </SelectTrigger>
-                        <SelectContent>
+                        {/* <SelectContent>
                           {!creating && (
                             <>
                               {categories?.map((item) => (
@@ -233,7 +274,10 @@ const Dashboard = () => {
                           )}
 
                           {creating && (
-                            <form className="flex flex-col gap-2 w-full">
+                            <form
+                              onSubmit={createCategory}
+                              className="flex flex-col gap-2 w-full"
+                            >
                               <input
                                 type="text"
                                 placeholder="Enter Name"
@@ -254,7 +298,6 @@ const Dashboard = () => {
                                 <Button
                                   label={"+ Create"}
                                   className="bg-black-2 text-white"
-                                  onClick={createCategory}
                                 />
                                 <Button
                                   label={"Cancel"}
@@ -264,6 +307,19 @@ const Dashboard = () => {
                               </div>
                             </form>
                           )}
+                        </SelectContent> */}
+                        <SelectContent>
+                          {categories?.map((item) => (
+                            <SelectItem
+                              key={item._id}
+                              value={item.icon + " " + item.name}
+                            >
+                              {item.icon} {item.name}
+                            </SelectItem>
+                          ))}
+                          <p className="text-sm text-gray-300 p-2 font-thin">
+                            To add new category go to settings
+                          </p>
                         </SelectContent>
                       </Select>
                     </div>
@@ -387,22 +443,22 @@ const Dashboard = () => {
 
         <div className="mt-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-            <div className="bg-purple-200 border-purple-400 flex-1 border rounded-md p-2">
+            {/* <div className="bg-purple-200 border-purple-400 flex-1 border rounded-md p-2">
               <span>Balance</span>
               <h1 className="text-3xl md:text-4xl font-bold mt-1 md:mt-2">
-                $0
+                ₹{balance}
               </h1>
-            </div>
+            </div> */}
             <div className="bg-green-200 border-green-400 flex-1 border rounded-md p-2">
-              <span>Income</span>
+              <span>In Flow</span>
               <h1 className="text-3xl md:text-4xl font-bold mt-1 md:mt-2">
-                $0
+                ₹{income}
               </h1>
             </div>
             <div className="bg-red-200 border-red-400 flex-1 border rounded-md p-2">
-              <span>Expense</span>
+              <span>Out Flow</span>
               <h1 className="text-3xl md:text-4xl font-bold mt-1 md:mt-2">
-                $0
+                ₹{expense}
               </h1>
             </div>
           </div>
@@ -438,9 +494,9 @@ const Dashboard = () => {
           </ul>
         </div>
 
-        <div className="mt-3 flex md:flex-row flex-col gap-4 md:items-center h-[350px] ">
+        <div className="mt-3 h-full flex lg:flex-row flex-col gap-4 md:items-start md:h-[350px]">
           {/* bar chart */}
-          <BarChart />
+          <Visualization />
 
           {/* recent transactions */}
           <RecentTransactions

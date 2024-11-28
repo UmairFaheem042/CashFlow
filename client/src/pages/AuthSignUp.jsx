@@ -30,7 +30,10 @@ const AuthSignUp = () => {
       }
 
       const data = await response.json();
-      navigate(`/dashboard/${data.createdUser._id}`);
+      localStorage.setItem("userId", data.user._id);
+      localStorage.setItem("email", data.user.email);
+      // navigate(`/dashboard/${data.createdUser._id}`);
+      navigate("/enter-otp");
     } catch (error) {
       console.error("An error occurred:", error);
     }

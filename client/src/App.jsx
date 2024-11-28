@@ -8,6 +8,7 @@ import AuthSignUp from "./pages/AuthSignUp";
 import ErrorBoundary from "./components/ErrorBoundary";
 import AllTransactions from "./pages/AllTransactions";
 import Settings from "./pages/Settings";
+import EnterOTP from "./pages/EnterOTP";
 
 const App = () => {
   return (
@@ -17,11 +18,12 @@ const App = () => {
         <Route path="/" element={<LandingPage />} />
         <Route path="/sign-in" element={<AuthSignIn />} />
         <Route path="/sign-up" element={<AuthSignUp />} />
+        <Route path="/enter-otp" element={<EnterOTP />} />
 
+        {/* Protected Routes */}
         <Route path="/dashboard/:userId" element={<Dashboard />} />
         <Route path="/transactions/:userId" element={<AllTransactions />} />
         <Route path="/settings/:userId" element={<Settings />} />
-        
       </Routes>
     </BrowserRouter>
   );

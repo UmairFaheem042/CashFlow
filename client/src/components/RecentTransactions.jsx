@@ -15,7 +15,7 @@ const RecentTransactions = ({ recentTransactions, categories }) => {
   };
 
   return (
-    <div className="border rounded-md p-2 h-full md:w-[300px] flex flex-col justify-between">
+    <div className="w-full border rounded-md p-2 !h-full lg:w-[300px] flex-1 flex flex-col justify-between">
       <h1 className="text-lg font-bold">Recent Transactions</h1>
       <ul className="mt-4 flex flex-col gap-3 overflow-y-scroll">
         {uniqueTransactions?.map((item) => (

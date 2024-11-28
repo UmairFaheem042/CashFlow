@@ -26,6 +26,12 @@ const UserSchema = new mongoose.Schema(
         ref: "Category",
       },
     ],
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: String,
+    verificationTokenExpiresAt: Date,
   },
   {
     timestamps: true,

@@ -1,10 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Button from "./Button";
 import { motion } from "framer-motion";
 
+// const getCookie = (name) => {
+//   const cookies = document.cookie.split("; ");
+//   const tokenCookie = cookies.find((row) => row.startsWith(`${name}=`));
+//   return tokenCookie ? tokenCookie.split("=")[1] : null;
+// };
+
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+
+  // useEffect(() => {
+  //   const token = getCookie("token");
+  //   setIsLoggedIn(!!token); // Set logged-in state based on token presence
+  // }, []);
+
+  const handleLogout = () => {
+    // document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    setIsLoggedIn(false);
+  };
   return (
     <header className="h-16">
       <div className="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
@@ -18,26 +35,46 @@ const Header = () => {
           <div className="md:flex md:items-center md:gap-12">
             <nav aria-label="Global" className="hidden md:block ">
               <ul className="flex items-center gap-6 text-sm">
-                <li>
-                  <Link to="/sign-up">
-                    <motion.div whileTap={{ scale: 0.95 }}>
-                      <Button
-                        label={"Get Started"}
-                        className="min-w-[120px] border"
-                      />
-                    </motion.div>
-                  </Link>
-                </li>
+                {!isLoggedIn && (
+                  <>
+                    <li>
+                      <Link to="/sign-up">
+                        <motion.div whileTap={{ scale: 0.95 }}>
+                          <Button
+                            label={"Get Started"}
+                            className="min-w-[120px] border"
+                          />
+                        </motion.div>
+                      </Link>
+                    </li>
 
-                <li>
-                  <Link to="/sign-in">
-                    <motion.div whileTap={{ scale: 0.95 }}>
-                      <Button label={"Login"} className="min-w-[120px] border">
-                        Login
-                      </Button>
-                    </motion.div>
-                  </Link>
-                </li>
+                    <li>
+                      <Link to="/sign-in">
+                        <motion.div whileTap={{ scale: 0.95 }}>
+                          <Button
+                            label={"Login"}
+                            className="min-w-[120px] border"
+                          />
+                        </motion.div>
+                      </Link>
+                    </li>
+                  </>
+                )}
+                {isLoggedIn && (
+                  <>
+                    <li>
+                      <Link to="/">
+                        <motion.div whileTap={{ scale: 0.95 }}>
+                          <Button
+                            label={"Logout"}
+                            className="min-w-[120px] border"
+                            onClick={handleLogout}
+                          />
+                        </motion.div>
+                      </Link>
+                    </li>
+                  </>
+                )}
               </ul>
             </nav>
 
@@ -97,19 +134,37 @@ const Header = () => {
                   isOpen ? "flex flex-col" : "hidden"
                 }   min-h-screen w-[80vw]  justify-center items-center gap-6 text-lg z-[999] `}
               >
-                <li>
-                  <Link to="/sign-up">
-                    <button className="min-w-[120px]">Get Started</button>
-                  </Link>
-                </li>
+                {!isLoggedIn && (
+                  <>
+                    <li>
+                      <Link to="/sign-up">
+                        <button className="min-w-[120px]">Get Started</button>
+                      </Link>
+                    </li>
 
-                <li>
-                  <Link to="/sign-in">
-                    <button variant="outline" className="min-w-[120px]">
-                      Login
-                    </button>
-                  </Link>
-                </li>
+                    <li>
+                      <Link to="/sign-in">
+                        <button variant="outline" className="min-w-[120px]">
+                          Login
+                        </button>
+                      </Link>
+                    </li>
+                  </>
+                )}
+                {isLoggedIn && (
+                  <>
+                    <li>
+                      <Link to="/">
+                        <button
+                          className="min-w-[120px]"
+                          onClick={handleLogout}
+                        >
+                          Logout
+                        </button>
+                      </Link>
+                    </li>
+                  </>
+                )}
               </ul>
             </nav>
           </div>

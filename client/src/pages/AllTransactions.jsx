@@ -69,8 +69,9 @@ const AllTransactions = () => {
     return category ? `${category.icon} ${category.name}` : "Others";
   };
 
+  console.log(transactions);
   return (
-    <div className='mt-4 relative max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[calc(100dvh-5.1rem)] flex-1 flex md:flex-row flex-col items-center md:items-start gap-6 md:gap-6 pb-10"'>
+    <div className='mt-3 relative max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[calc(100dvh-5.1rem)] flex-1 flex md:flex-row flex-col items-center md:items-start gap-6 md:gap-6 pb-10"'>
       <Sidebar tab={"transactions"} />
       <main className="flex min-h-[calc(100dvh-6rem)] flex-col w-full flex-1">
         <header className="flex gap-2 sm:flex-row flex-col justify-between md:items-center w-full">
@@ -99,12 +100,12 @@ const AllTransactions = () => {
                   <TableCell className="text-center">{item.date}</TableCell>
                   <TableCell
                     className={`text-center font-semibold ${
-                      item.type === "Expense"
+                      item.transType === "Expense"
                         ? "text-red-600"
                         : "text-green-600"
                     }`}
                   >
-                    {item.type === "Expense" ? "-" : "+"} ₹{item.amount}
+                    {item.transType === "Expense" ? "-" : "+"} ₹{item.amount}
                   </TableCell>
                 </TableRow>
               ))}

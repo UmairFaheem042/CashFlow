@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import Button from "../components/Button";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AuthSignIn = () => {
   const navigate = useNavigate();
@@ -22,16 +24,23 @@ const AuthSignIn = () => {
           password,
         }),
       });
-      if (!response.ok) {
+
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem("userId", data.id);
+        console.log(data);
+        toast.success(data.message);
+        setTimeout(() => {
+          navigate(`/dashboard/${data.id}`);
+        }, 1000);
+      } else {
         const errorData = await response.json();
-        console.error("Error:", errorData || "SignIn failed");
+        toast.error(errorData.message);
         return;
       }
-
-      const data = await response.json();
-      navigate(`/dashboard/${data.id}`);
     } catch (error) {
       console.error("An error occurred:", error);
+      toast.error(error.message);
     }
   }
   return (
@@ -93,6 +102,7 @@ const AuthSignIn = () => {
           </Link>
         </p>
       </form>
+      <ToastContainer />
     </div>
   );
 };
