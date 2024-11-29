@@ -76,12 +76,12 @@ const Settings = () => {
     fetchCategories();
   }, []);
 
-  if (loading)
-    return (
-      <div>
-        <p>Loading...</p>
-      </div>
-    );
+  // if (loading)
+  //   return (
+  //     <div>
+  //       <p>Loading...</p>
+  //     </div>
+  //   );
 
   return (
     <div className='mt-3 relative max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[calc(100dvh-5.1rem)] flex-1 flex md:flex-row flex-col items-center md:items-start gap-6 md:gap-6 pb-10"'>

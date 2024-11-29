@@ -44,10 +44,10 @@ exports.getAllCategories = async (req, res) => {
     const user = await User.findById(userId).populate({
       path: "categories",
       options: { sort: { name: 1 } },
-      populate: {
-        path: "transactions", // Populate transactions within categories
-        options: { sort: { date: -1 } }, // Optionally sort transactions by date (descending)
-      },
+      // populate: {
+      //   path: "transactions", // Populate transactions within categories
+      //   options: { sort: { date: -1 } },
+      // },
     });
 
     if (!user) {

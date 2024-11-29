@@ -7,12 +7,13 @@ import "react-toastify/dist/ReactToastify.css";
 
 const AuthSignIn = () => {
   const navigate = useNavigate();
-  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await fetch("http://localhost:3000/api/user/signin", {
         method: "POST",
@@ -23,20 +24,21 @@ const AuthSignIn = () => {
           email,
           password,
         }),
+        credentials: "include",
       });
 
       if (response.ok) {
         const data = await response.json();
-        localStorage.setItem("userId", data.id);
-        console.log(data);
         toast.success(data.message);
         setTimeout(() => {
-          navigate(`/dashboard/${data.id}`);
-        }, 1000);
+          navigate("/loading");
+          setTimeout(() => {
+            navigate(`/dashboard/${data.id}`);
+          }, 1000);
+        }, 500);
       } else {
         const errorData = await response.json();
         toast.error(errorData.message);
-        return;
       }
     } catch (error) {
       console.error("An error occurred:", error);

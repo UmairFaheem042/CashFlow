@@ -8,9 +8,7 @@ const {
 
 // These all routes will be authenticated first
 router.post("/:userId/createCategory", createCategory);
-
 router.get("/:userId/getAllCategories", getAllCategories);
-
 router.delete("/:userId/deleteCategory/:categoryId", deleteCategory);
 
 module.exports = router;

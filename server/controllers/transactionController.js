@@ -38,6 +38,10 @@ exports.createTransaction = async (req, res) => {
 
     user.transactions.push(transaction._id);
     await user.save();
+    
+    // also push transaction in created category
+    // category.transactions.push(transaction._id);
+    // await category.save();
 
     res.status(201).json({
       success: true,

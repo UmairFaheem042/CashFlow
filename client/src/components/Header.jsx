@@ -2,26 +2,62 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Button from "./Button";
 import { motion } from "framer-motion";
-
-// const getCookie = (name) => {
-//   const cookies = document.cookie.split("; ");
-//   const tokenCookie = cookies.find((row) => row.startsWith(`${name}=`));
-//   return tokenCookie ? tokenCookie.split("=")[1] : null;
-// };
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
 
-  // useEffect(() => {
-  //   const token = getCookie("token");
-  //   setIsLoggedIn(!!token); // Set logged-in state based on token presence
-  // }, []);
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/user/signout", {
+        method: "POST",
+        credentials: "include",
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to log out");
+      }
+      setIsLoggedIn(false);
 
-  const handleLogout = () => {
-    // document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    setIsLoggedIn(false);
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Error during logout:", error.message);
+      toast.error("Error during logout");
+    }
   };
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:3000/api/user/check-auth",
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setIsLoggedIn(true);
+        } else {
+          setIsLoggedIn(false);
+        }
+      } catch (error) {
+        console.error("Error during authentication check:", error);
+        setIsLoggedIn(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  if (isLoggedIn === null) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <header className="h-16">
       <div className="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
@@ -170,6 +206,7 @@ const Header = () => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </header>
   );
 };

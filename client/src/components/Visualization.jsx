@@ -19,7 +19,7 @@ const data = [
 const Visualization = () => {
   return (
     <div className="border w-full flex items-center justify-center lg:w-auto h-full p-2 rounded-md">
-      <BarChart height={350} width={700} data={data} className="py-4">
+      <BarChart height={350} width={600} data={data} className="py-4">
         <XAxis dataKey="name" />
         <YAxis />
         <Bar

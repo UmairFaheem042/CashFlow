@@ -207,12 +207,12 @@ const Dashboard = () => {
     fetchCategory();
   }, []);
 
-  if (loading)
-    return (
-      <div>
-        <p>Loading...</p>
-      </div>
-    );
+  // if (loading)
+  //   return (
+  //     <div>
+  //       <p>Loading...</p>
+  //     </div>
+  //   );
 
   return (
     <div className="my-3 relative max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[calc(100dvh-5.5rem)] flex-1 flex md:flex-row flex-col items-center md:items-start gap-6 md:gap-6 ">
@@ -494,7 +494,7 @@ const Dashboard = () => {
           </ul>
         </div>
 
-        <div className="mt-3 h-full flex lg:flex-row flex-col gap-4 md:items-start md:h-[350px]">
+        <div className="mt-3 h-full flex lg:flex-row flex-col gap-4 md:items-start lg:h-[350px]">
           {/* bar chart */}
           <Visualization />
 

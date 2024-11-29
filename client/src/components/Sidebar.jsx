@@ -6,6 +6,15 @@ const Sidebar = ({ tab }) => {
   const navigate = useNavigate();
   // const [currTab, setCurrTab] = useState("home");
   const { userId } = useParams();
+
+  function handleNavigation(changeTab) {
+    setTimeout(() => {
+      navigate("/loading");
+      setTimeout(() => {
+        navigate(`/${changeTab}/${userId}`);
+      }, 500);
+    }, 500);
+  }
   return (
     <div>
       <aside className="border flex flex-row md:flex-col items-center md:justify-center md:gap-6 gap-10 p-2 md:p-4 rounded-lg h-min w-max">
@@ -17,7 +26,8 @@ const Sidebar = ({ tab }) => {
           }`}
           onClick={() => {
             // setCurrTab("home");
-            navigate(`/dashboard/${userId}`);
+            // navigate(`/dashboard/${userId}`);
+            handleNavigation("dashboard");
           }}
         >
           <i className="ri-home-line text-2xl cursor-pointer" />
@@ -31,7 +41,8 @@ const Sidebar = ({ tab }) => {
           }`}
           onClick={() => {
             // setCurrTab("transactions");
-            navigate(`/transactions/${userId}`);
+            // navigate(`/transactions/${userId}`);
+            handleNavigation("transactions");
           }}
         >
           <i className="ri-exchange-dollar-line text-2xl cursor-pointer" />
@@ -45,7 +56,8 @@ const Sidebar = ({ tab }) => {
           }`}
           onClick={() => {
             // setCurrTab("settings");
-            navigate(`/settings/${userId}`);
+            // navigate(`/settings/${userId}`);
+            handleNavigation("settings");
           }}
         >
           <i className="ri-settings-line text-2xl cursor-pointer" />

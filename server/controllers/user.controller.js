@@ -64,10 +64,10 @@ exports.signUp = async (req, res) => {
 exports.signIn = async (req, res) => {
   const { email, password } = req.body;
   try {
-    if (!password)
+    if (!email || !password)
       return res.status().json({
         success: false,
-        message: "Enter password",
+        message: "All fields are required",
       });
 
     const user = await User.findOne({ email });
@@ -76,8 +76,6 @@ exports.signIn = async (req, res) => {
         success: false,
         message: "User not found",
       });
-
-    // compare password
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
@@ -104,7 +102,21 @@ exports.signIn = async (req, res) => {
   }
 };
 
-exports.signOut = async (req, res) => {};
+exports.signOut = async (req, res) => {
+  try {
+    res.clearCookie("token");
+    res.status(200).json({
+      success: true,
+      message: "User logged out successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while logging out",
+      error,
+    });
+  }
+};
 
 exports.verifyOTP = async (req, res) => {
   const { email, verificationToken } = req.body;
@@ -145,6 +157,29 @@ exports.verifyOTP = async (req, res) => {
       success: false,
       message: "An error occurred during verification",
       error: error.message,
+    });
+  }
+};
+
+exports.auth = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).select("-password");
+    if (!user)
+      return res.status(400).json({
+        success: false,
+        message: "User not found",
+      });
+
+    res.status(200).json({
+      success: true,
+      message: "User found successfully",
+      user,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: "An error occurred while authenticating user",
+      error,
     });
   }
 };
