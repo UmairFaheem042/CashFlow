@@ -54,9 +54,9 @@ const Header = () => {
     checkAuth();
   }, []);
 
-  if (isLoggedIn === null) {
-    return <div>Loading...</div>;
-  }
+  // if (isLoggedIn === null) {
+  //   return <div>Loading...</div>;
+  // }
 
   return (
     <header className="h-16">

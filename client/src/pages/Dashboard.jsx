@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { useParams } from "react-router-dom";
 import Visualization from "@/components/Visualization";
+import LoadingPage from "./LoadingPage";
 
 const Dashboard = () => {
   const [balance, setBalance] = useState(0);
@@ -47,6 +48,15 @@ const Dashboard = () => {
 
   const { userId } = useParams();
 
+  function resetForm() {
+    setCategory("");
+    setAmount("");
+    setDescription("");
+    setTransType("Expense");
+    setDate("");
+    setTime("");
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     try {
@@ -66,31 +76,30 @@ const Dashboard = () => {
             date,
             time,
           }),
+          credentials: "include",
         }
       );
       if (!response.ok) {
         const errorData = await response.json();
         console.error("Error:", errorData || "Transaction creation failed");
+        setLoading(false);
         return;
       }
       fetchAllTransactions();
       fetchRecentTransactions();
-      setLoading(false);
-      setCategory("");
-      setAmount("");
-      setDescription("");
-      setTransType("Expense");
-      setDate("");
-      setTime("");
+
+      resetForm();
     } catch (error) {
-      setLoading(false);
       console.error("An error occurred:", error);
+    } finally {
+      setLoading(false);
     }
   }
 
   async function createCategory() {
     try {
       setCreating(true);
+      setLoading(true);
       const response = await fetch(
         `http://localhost:3000/api/category/${userId}/createCategory`,
         {
@@ -102,11 +111,13 @@ const Dashboard = () => {
             name,
             icon,
           }),
+          credentials: "include",
         }
       );
       if (!response.ok) {
         const errorData = await response.json();
         console.error("Error:", errorData || "Category creation failed");
+        setLoading(false);
         return;
       }
       setCategories((prev) => [
@@ -114,19 +125,25 @@ const Dashboard = () => {
         { name, icon }, // Add the new category to the list
       ]);
 
-      setName(""); // Clear input fields
+      setName("");
       setIcon("");
       setCreating(false);
     } catch (error) {
       setCreating(false);
       console.error("An error occurred:", error);
+    } finally {
+      setLoading(false);
     }
   }
 
   async function fetchCategory() {
     try {
+      setLoading(true);
       const response = await fetch(
-        `http://localhost:3000/api/category/${userId}/getAllCategories`
+        `http://localhost:3000/api/category/${userId}/getAllCategories`,
+        {
+          credentials: "include",
+        }
       );
       if (!response.ok) {
         const errorData = await response.json();
@@ -134,19 +151,26 @@ const Dashboard = () => {
           "Error:",
           errorData || "Error while fetching recent transactions"
         );
+        setLoading(false);
         return;
       }
       const data = await response.json();
       setCategories(data.categories);
     } catch (error) {
       console.error("An error occurred:", error);
+    } finally {
+      setLoading(false);
     }
   }
 
   async function fetchRecentTransactions() {
     try {
+      setLoading(true);
       const response = await fetch(
-        `http://localhost:3000/api/transaction/${userId}/getRecentTransactions`
+        `http://localhost:3000/api/transaction/${userId}/getRecentTransactions`,
+        {
+          credentials: "include",
+        }
       );
       if (!response.ok) {
         const errorData = await response.json();
@@ -154,19 +178,26 @@ const Dashboard = () => {
           "Error:",
           errorData || "Error while fetching recent transactions"
         );
+        setLoading(false);
         return;
       }
       const data = await response.json();
       setRecentTransactions((prev) => [...prev, ...data.transactions]);
     } catch (error) {
       console.error("An error occurred:", error);
+    } finally {
+      setLoading(false);
     }
   }
 
   async function fetchAllTransactions() {
     try {
+      setLoading(true);
       const response = await fetch(
-        `http://localhost:3000/api/transaction/${userId}/getAllTransactions`
+        `http://localhost:3000/api/transaction/${userId}/getAllTransactions`,
+        {
+          credentials: "include",
+        }
       );
       if (!response.ok) {
         const errorData = await response.json();
@@ -174,6 +205,7 @@ const Dashboard = () => {
           "Error:",
           errorData || "Error while fetching recent transactions"
         );
+        setLoading(false);
         return;
       }
       const data = await response.json();
@@ -195,6 +227,8 @@ const Dashboard = () => {
       // setBalance(newBalance);
     } catch (error) {
       console.error("An error occurred:", error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -207,12 +241,7 @@ const Dashboard = () => {
     fetchCategory();
   }, []);
 
-  // if (loading)
-  //   return (
-  //     <div>
-  //       <p>Loading...</p>
-  //     </div>
-  //   );
+  if (loading) return <LoadingPage />;
 
   return (
     <div className="my-3 relative max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[calc(100dvh-5.5rem)] flex-1 flex md:flex-row flex-col items-center md:items-start gap-6 md:gap-6 ">
@@ -443,12 +472,12 @@ const Dashboard = () => {
 
         <div className="mt-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-            {/* <div className="bg-purple-200 border-purple-400 flex-1 border rounded-md p-2">
+            <div className="bg-purple-200 border-purple-400 flex-1 border rounded-md p-2">
               <span>Balance</span>
               <h1 className="text-3xl md:text-4xl font-bold mt-1 md:mt-2">
                 ₹{balance}
               </h1>
-            </div> */}
+            </div>
             <div className="bg-green-200 border-green-400 flex-1 border rounded-md p-2">
               <span>In Flow</span>
               <h1 className="text-3xl md:text-4xl font-bold mt-1 md:mt-2">

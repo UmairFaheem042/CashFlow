@@ -1,3 +1,4 @@
+import LoadingPage from "@/pages/LoadingPage";
 import React, { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
@@ -27,7 +28,7 @@ const ProtectedRoute = () => {
   }, []);
 
   if (isAuthenticated === null) {
-    return <div>Loading...</div>; // Show a loader while checking auth
+    return <LoadingPage/>; 
   }
 
   return isAuthenticated ? <Outlet /> : <Navigate to="/sign-in" replace />;

@@ -9,65 +9,76 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { useNavigate, useParams } from "react-router-dom";
+import { Button } from "./ui/button";
 
-import Button from "./Button";
-
-const AppDrawer = () => {
-  const navigate = useNavigate();
+const AppDrawer = ({ transactions, categories, getCategoryName }) => {
+  const transType = "Expense";
   return (
-    <Drawer className="md:hidden absolute">
-      <DrawerTrigger className="md:hidden bg-gray-100 px-6 py-2 rounded-lg border absolute translate-x-[-50%]  left-[50%] bottom-2">
-        {/* <i className="ri-guide-line" /> */}
-        Open Tabs
+    <Drawer className="">
+      <DrawerTrigger className="w-full border border-gray-100 p-2 rounded-md">
+        <div className="w-full flex items-center gap-2">
+          <div className="bg-gray-100 p-2 rounded-md">🚌</div>
+          <div className="w-full text-sm ">
+            <div className="flex justify-between items-center">
+              {/* <h4 className="font-medium text-[1rem]">
+                Transaction Description
+              </h4> */}
+              <p className="flex flex-col items-start">
+                <span className="font-medium text-[1rem]">
+                  {getCategoryName()}asd
+                </span>
+                <span className="text-gray-400 font-medium">
+                  Nov 30, 2024, 5:42 pm
+                </span>
+              </p>
+              <p
+                className={`text-[1rem] font-semibold ${
+                  transType === "Expense" ? "text-red-600" : "text-green-600"
+                } `}
+              >
+                {" "}
+                {transType === "Expense" ? "-" : "+"} ₹1000
+              </p>
+            </div>
+          </div>
+        </div>
       </DrawerTrigger>
-      <DrawerContent className=" ">
-        <DrawerHeader className="flex justify-center gap-5 border">
-          <motion.div
-            whileTap={{ scale: 0.95 }}
-            className={`${
-              tab === "dashboard" &&
-              "relative after:bg-gray-200 after:h-1 after:w-full after:absolute after:left-0 after:-bottom-1"
-            }`}
-            onClick={() => {
-              // setCurrTab("home");
-              navigate(`/dashboard/${userId}`);
-            }}
-          >
-            <i className="ri-home-line text-2xl cursor-pointer" />
-          </motion.div>
-
-          <motion.div
-            whileTap={{ scale: 0.95 }}
-            className={`${
-              tab === "transactions" &&
-              "relative after:bg-gray-200 after:h-1 after:w-full after:absolute after:left-0 after:-bottom-1"
-            }`}
-            onClick={() => {
-              // setCurrTab("transactions");
-              navigate(`/transactions/${userId}`);
-            }}
-          >
-            <i className="ri-exchange-dollar-line text-2xl cursor-pointer" />
-          </motion.div>
-
-          <motion.div
-            whileTap={{ scale: 0.95 }}
-            className={`${
-              tab === "settings" &&
-              "relative after:bg-gray-200 after:h-1 after:w-full after:absolute after:left-0 after:-bottom-1"
-            }`}
-            onClick={() => {
-              // setCurrTab("settings");
-              navigate(`/settings/${userId}`);
-            }}
-          >
-            <i className="ri-settings-line text-2xl cursor-pointer" />
-          </motion.div>
+      <DrawerContent>
+        <DrawerHeader>
+          <DrawerTitle className="text-xl">Transaction Details</DrawerTitle>
         </DrawerHeader>
-        <DrawerFooter className="flex">
-          <DrawerClose>
-            <Button label="Cancel" />
+        <div className="px-4 flex items-center gap-2">
+          <div className="border p-2 rounded-md">🚌</div>
+          <div className="w-full text-sm flex items-center justify-between">
+            {/* <h4 className="font-medium text-[1rem]">Transaction Description</h4> */}
+            <p className="flex flex-col ">
+              <span className="font-medium text-[1rem]">Transportation</span>
+              <span className="text-gray-400 font-thin">
+                Nov 30, 2024, 5:42 pm
+              </span>
+            </p>
+            <h1
+              className={`my-4 text-center text-2xl font-semibold ${
+                transType === "Expense" ? "text-red-600" : "text-green-600"
+              }`}
+            >
+              {transType === "Expense" ? "-" : "+"} ₹100
+            </h1>
+          </div>
+        </div>
+        <div className="px-4">
+          <h1>Transaction Description</h1>
+          <p className="text-gray-400 text-sm">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi
+            commodi amet ad aliquid architecto tempore blanditiis temporibus
+            dolore nisi necessitatibus.
+          </p>
+        </div>
+        <DrawerFooter>
+          <DrawerClose className="w-full">
+            <Button variant="outline" className="w-full">
+              Close
+            </Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>

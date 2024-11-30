@@ -66,7 +66,9 @@ exports.getAllTransactions = async (req, res) => {
         message: "User not found",
       });
     }
-    const transactions = await Transaction.find({ userId });
+    const transactions = await Transaction.find({ userId }).sort({
+      createdAt: -1,
+    });
     res.status(200).json({
       success: true,
       message: "Transactions retrieved successfully",
