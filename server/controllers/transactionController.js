@@ -38,10 +38,9 @@ exports.createTransaction = async (req, res) => {
 
     user.transactions.push(transaction._id);
     await user.save();
-    
-    // also push transaction in created category
-    // category.transactions.push(transaction._id);
-    // await category.save();
+
+    categoryDoc.transactions.push(transaction._id);
+    await categoryDoc.save();
 
     res.status(201).json({
       success: true,
@@ -94,8 +93,8 @@ exports.getRecentTransactions = async (req, res) => {
     }
     const transactions = await Transaction.find({ userId })
       .sort({ createdAt: -1 })
-      .limit(10);
-      
+      .limit(5);
+
     res.status(200).json({
       success: true,
       message: "Transactions retrieved successfully",
@@ -129,7 +128,14 @@ exports.deleteTransaction = async (req, res) => {
       });
     }
 
+    await Category.findByIdAndUpdate(
+      transaction.category, // Use the category field from the transaction
+      { $pull: { transactions: transactionId } }, // Remove the transaction ID
+      { new: true }
+    );
+
     await Transaction.findByIdAndDelete(transactionId);
+
     await User.findByIdAndUpdate(
       userId,
       { $pull: { transactions: transactionId } },
@@ -147,4 +153,16 @@ exports.deleteTransaction = async (req, res) => {
       error: error.message,
     });
   }
+};
+
+exports.getMonthlyTransactions = async (req, res) => {
+  const { userId } = req.params;
+  try {
+  } catch (error) {}
+};
+
+exports.getYearlyTransactions = async (req, res) => {
+  const { userId } = req.params;
+  try {
+  } catch (error) {}
 };

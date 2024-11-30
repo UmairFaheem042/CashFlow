@@ -1,5 +1,6 @@
 const User = require("../models/user.model");
 const Category = require("../models/category.model");
+const Transaction = require("../models/transaction.model");
 
 exports.createCategory = async (req, res) => {
   const { name, icon } = req.body;
@@ -8,11 +9,10 @@ exports.createCategory = async (req, res) => {
   try {
     const user = await User.findById(userId);
     if (!user) {
-      res.status(401).json({
+      return res.status(401).json({
         success: false,
         message: "You should be logged in fot this",
       });
-      return;
     }
     const category = await Category.create({ name, icon, userId });
 
@@ -81,18 +81,64 @@ exports.deleteCategory = async (req, res) => {
         message: "Category not found",
       });
     }
-    await Category.findByIdAndDelete(categoryId);
 
-    await User.findByIdAndUpdate(
-      userId,
-      { $pull: { categories: categoryId } }, // Remove categoryId from the categories array
+    let othersCategory = await Category.findOne({ name: "Others", userId });
+    if (!othersCategory) {
+      othersCategory = await Category.create({
+        name: "Others",
+        icon: "📂",
+        userId,
+        transactions: [],
+      });
+    }
+
+    // Step 2: Handle "Others" category deletion separately
+    if (category.name === "Others") {
+      othersCategory = await Category.create({
+        name: "Others",
+        icon: "📂",
+        userId,
+        transactions: [],
+      });
+    }
+
+    const updatedTransactions = await Transaction.updateMany(
+      { category: categoryId },
+      { $set: { category: othersCategory._id } }
+    );
+
+    const transactionIds = await Transaction.find(
+      { category: othersCategory._id },
+      "_id"
+    ).then((transactions) => transactions.map((t) => t._id));
+
+    await Category.findByIdAndUpdate(
+      othersCategory._id,
+      { $addToSet: { transactions: { $each: transactionIds } } }, // Prevent duplicate transaction IDs
       { new: true }
     );
+
+    await Category.findByIdAndDelete(categoryId);
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $pull: { categories: categoryId } }, // Remove the deleted category
+      { new: true }
+    );
+
+    if (!updatedUser.categories.includes(othersCategory._id)) {
+      await User.findByIdAndUpdate(
+        userId,
+        { $addToSet: { categories: othersCategory._id } }, // Add "Others" if not present
+        { new: true }
+      );
+    }
 
     res.status(200).json({
       success: true,
       message: "Category deleted successfully",
       deletedCategory: category,
+      reassignedTo: othersCategory,
     });
   } catch (error) {
     res.status(500).json({

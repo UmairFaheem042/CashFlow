@@ -5,10 +5,11 @@ const {
   getAllCategories,
   deleteCategory,
 } = require("../controllers/categoryController");
+const { validateToken } = require("../middleware/validateToken");
 
 // These all routes will be authenticated first
-router.post("/:userId/createCategory", createCategory);
-router.get("/:userId/getAllCategories", getAllCategories);
-router.delete("/:userId/deleteCategory/:categoryId", deleteCategory);
+router.post("/:userId/createCategory", validateToken,createCategory);
+router.get("/:userId/getAllCategories", validateToken, getAllCategories);
+router.delete("/:userId/deleteCategory/:categoryId", validateToken, deleteCategory);
 
 module.exports = router;
