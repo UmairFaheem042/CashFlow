@@ -36,8 +36,11 @@ const Dashboard = () => {
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [transType, setTransType] = useState("Expense");
+  const [card, setCard] = useState("");
 
   const [recentTransactions, setRecentTransactions] = useState([]);
+
+  const [cards, setCards] = useState([]);
 
   const [categories, setCategories] = useState([]);
   const [creating, setCreating] = useState(false);
@@ -232,15 +235,41 @@ const Dashboard = () => {
     }
   }
 
+  async function fetchCards() {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `http://localhost:3000/api/card/${userId}/getAllCards`,
+        {
+          credentials: "include",
+        }
+      );
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error:", errorData || "Error while fetching cards");
+        setLoading(false);
+        return;
+      }
+      const data = await response.json();
+      setCards(data.cards);
+    } catch (error) {
+      console.error("An error occurred:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
-    fetchRecentTransactions();
+    // fetchRecentTransactions();
     fetchAllTransactions();
+    fetchCards();
   }, []);
 
   useEffect(() => {
     fetchCategory();
   }, []);
 
+  // console.log(recentTransactions);
   if (loading) return <LoadingPage />;
 
   return (
@@ -521,6 +550,23 @@ const Dashboard = () => {
               Expense
             </li>
           </ul>
+          <div>
+            <Select
+              value={cards[0]?.name}
+              onValueChange={(value) => setCard(value)}
+            >
+              <SelectTrigger id="card" className="py-[0.6rem]">
+                <SelectValue placeholder="Choose One" />
+              </SelectTrigger>
+              <SelectContent>
+                {cards?.map((item) => (
+                  <SelectItem key={item._id} value={item.name}>
+                    {item.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div className="mt-3 h-full flex lg:flex-row flex-col gap-4 md:items-start lg:h-[350px]">
@@ -530,6 +576,7 @@ const Dashboard = () => {
           {/* recent transactions */}
           <RecentTransactions
             recentTransactions={recentTransactions}
+            cards={cards}
             categories={categories}
           />
         </div>

@@ -4,6 +4,7 @@ const connectDB = require("./config/db");
 const userRoutes = require("./routes/user.route");
 const transactionRoutes = require("./routes/transaction.route");
 const categoryRoutes = require("./routes/category.route");
+const cardRoutes = require("./routes/card.route");
 const cors = require("cors");
 require("dotenv").config();
 const cookieParser = require("cookie-parser");
@@ -21,6 +22,7 @@ app.use(cookieParser());
 app.use("/api/user", userRoutes);
 app.use("/api/transaction", transactionRoutes);
 app.use("/api/category", categoryRoutes);
+app.use("/api/card", cardRoutes);
 
 connectDB();
 

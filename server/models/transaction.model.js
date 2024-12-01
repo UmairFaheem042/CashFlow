@@ -7,6 +7,10 @@ const TransactionSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    cardId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Card",
+    },
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",

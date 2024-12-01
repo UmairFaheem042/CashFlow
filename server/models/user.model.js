@@ -26,6 +26,12 @@ const UserSchema = new mongoose.Schema(
         ref: "Category",
       },
     ],
+    cards: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Card",
+      },
+    ],
     isVerified: {
       type: Boolean,
       default: false,

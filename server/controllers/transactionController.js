@@ -1,16 +1,26 @@
 const User = require("../models/user.model");
 const Transaction = require("../models/transaction.model");
 const Category = require("../models/category.model");
+const Card = require("../models/card.model");
 
 exports.createTransaction = async (req, res) => {
   const { userId } = req.params;
-  const { category, amount, description, transType, date, time } = req.body;
+  const { category, amount, description, transType, date, time, cardId } =
+    req.body;
   try {
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
+      });
+    }
+
+    const card = await Card.findById(cardId);
+    if (!card) {
+      return res.status(404).json({
+        success: false,
+        message: "Card not found",
       });
     }
 
@@ -28,6 +38,7 @@ exports.createTransaction = async (req, res) => {
 
     const transaction = await Transaction.create({
       userId,
+      cardId,
       category: categoryDoc._id,
       amount: parsedAmount,
       description,
@@ -38,6 +49,9 @@ exports.createTransaction = async (req, res) => {
 
     user.transactions.push(transaction._id);
     await user.save();
+
+    card.transactions.push(transaction._id);
+    await card.save();
 
     categoryDoc.transactions.push(transaction._id);
     await categoryDoc.save();
@@ -57,6 +71,7 @@ exports.createTransaction = async (req, res) => {
 };
 
 exports.getAllTransactions = async (req, res) => {
+  // fetch transactions for a particular card
   const { userId } = req.params;
   try {
     const user = await User.findById(userId);
@@ -129,6 +144,20 @@ exports.deleteTransaction = async (req, res) => {
         message: "Transaction not found",
       });
     }
+
+    // const card = await Card.findById(userId);
+    // if (!card) {
+    //   return res.status(404).json({
+    //     success: false,
+    //     message: "Card not found",
+    //   });
+    // }
+
+    await Card.findByIdAndUpdate(
+      transaction.cardId,
+      { $pull: { transactions: transactionId } },
+      { new: true }
+    );
 
     await Category.findByIdAndUpdate(
       transaction.category, // Use the category field from the transaction

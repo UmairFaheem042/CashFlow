@@ -22,8 +22,11 @@ const Settings = () => {
 
   const [cardColor, setCardColor] = useState("bg-teal-500");
   const [cardBorder, setCardBorder] = useState("bg-teal-200");
+  const [cardName, setCardName] = useState("");
+  const [cardBalance, setCardBalance] = useState(0);
 
   const [categories, setCategories] = useState([]);
+  const [cards, setCards] = useState([]);
   const { userId } = useParams();
 
   async function handleSubmitCategory(e) {
@@ -90,9 +93,74 @@ const Settings = () => {
     }
   }
 
+  async function handleSubmitCard(e) {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `http://localhost:3000/api/card/${userId}/createCard`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: cardName,
+            balance: cardBalance,
+            color: cardColor,
+          }),
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error:", errorData || "Error while creating card");
+        setLoading(false);
+        return;
+      }
+
+      const data = await response.json();
+      fetchCards();
+      // setCards(prev=>[...prev], )
+      console.log(data);
+    } catch (error) {
+      console.error("An error occurred:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function fetchCards() {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `http://localhost:3000/api/card/${userId}/getAllCards`,
+        {
+          credentials: "include",
+        }
+      );
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error:", errorData || "Error while fetching cards");
+        setLoading(false);
+        return;
+      }
+      const data = await response.json();
+      setCards(data.cards);
+    } catch (error) {
+      console.error("An error occurred:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
     fetchCategories();
+    fetchCards();
   }, []);
+
+  console.log(cards);
 
   if (loading) return <LoadingPage />;
 
@@ -188,7 +256,7 @@ const Settings = () => {
         <div className="mt-8 border p-4 rounded-lg flex flex-col gap-2">
           <div className="flex justify-between">
             <h1>Cards & Wallets</h1>
-            
+
             <Dialog>
               <motion.div whileTap={{ scale: 0.95 }} className="w-max">
                 <DialogTrigger className="min-w-[100px] border rounded-md flex items-center justify-center h-full px-4 py-1">
@@ -200,7 +268,7 @@ const Settings = () => {
                   <DialogTitle>Add New Payment Option</DialogTitle>
                 </DialogHeader>
                 <form
-                  // onSubmit={handleSubmitCategory}
+                  onSubmit={handleSubmitCard}
                   className="w-full flex flex-col gap-2"
                 >
                   <div className="flex flex-col gap-2">
@@ -225,6 +293,7 @@ const Settings = () => {
                           setCardBorder("bg-teal-200");
                         }}
                       ></div>
+
                       <div
                         className="cursor-pointer w-7 h-7 border-4 border-red-200 bg-red-500 rounded-full"
                         onClick={() => {
@@ -240,6 +309,7 @@ const Settings = () => {
                           setCardBorder("bg-purple-200");
                         }}
                       ></div>
+
                       <div
                         className="cursor-pointer w-7 h-7 border-4 border-green-200 bg-green-500 rounded-full"
                         onClick={() => {
@@ -247,6 +317,7 @@ const Settings = () => {
                           setCardBorder("bg-green-200");
                         }}
                       ></div>
+
                       <div
                         className="cursor-pointer w-7 h-7 border-4 border-yellow-200 bg-yellow-500 rounded-full"
                         onClick={() => {
@@ -254,6 +325,7 @@ const Settings = () => {
                           setCardBorder("bg-yellow-200");
                         }}
                       ></div>
+
                       <div
                         className="cursor-pointer w-7 h-7 border-4 border-gray-200 bg-gray-800 rounded-full"
                         onClick={() => {
@@ -263,6 +335,7 @@ const Settings = () => {
                       ></div>
                     </div>
                   </div>
+
                   <div className="mt-4 flex sm:flex-row flex-col gap-2 sm:items-center">
                     <div className="flex-1 flex flex-col gap-1">
                       <label
@@ -275,8 +348,8 @@ const Settings = () => {
                         type="text"
                         placeholder="My Wallet"
                         id="name"
-                        value={icon}
-                        onChange={(e) => setIcon(e.target.value)}
+                        value={cardName}
+                        onChange={(e) => setCardName(e.target.value)}
                         className="outline-none p-2 border rounded-md placeholder:font-thin placeholder:text-sm"
                         required
                       />
@@ -292,8 +365,8 @@ const Settings = () => {
                         type="number"
                         placeholder="0.00"
                         id="balance"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        value={cardBalance}
+                        onChange={(e) => setCardBalance(e.target.value)}
                         min={0}
                         className="outline-none p-2 border rounded-md placeholder:font-thin placeholder:text-sm"
                         required
@@ -316,16 +389,17 @@ const Settings = () => {
           </div>
           <div className="flex justify-between">
             <div className="flex gap-2">
-              <div className="bg-teal-500 text-white rounded-lg px-4 py-2 min-w-[100px]">
-                <span className="text-sm font-thin">Cash</span>
-                <h3 className="text-2xl font-semibold">₹50,000</h3>
-              </div>
-              <div className="bg-indigo-500 text-white rounded-lg px-4 py-2 min-w-[100px]">
-                <span className="text-sm font-thin">Central Bank</span>
-                <h3 className="text-2xl font-semibold">₹20,000</h3>
-              </div>
+              {cards?.map((item) => (
+                <div
+                  key={item._id}
+                  className={`${item.color} text-white rounded-lg px-4 py-2 min-w-[140px]`}
+                  style={{ backgroundColor: item.color }}
+                >
+                  <span className="text-sm font-thin">{item.name}</span>
+                  <h3 className="text-2xl font-semibold">₹{item.balance}</h3>
+                </div>
+              ))}
             </div>
-            {/* <Button label="Add New" className="border" /> */}
           </div>
         </div>
       </main>

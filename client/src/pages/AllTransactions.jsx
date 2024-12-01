@@ -280,7 +280,7 @@ const AllTransactions = () => {
                           : "text-green-600"
                       }`}
                     >
-                      {item.transType === "Expense" ? "-" : "+"} ₹100
+                      {item.transType === "Expense" ? "-" : "+"} ₹{item.amount}
                     </h1>
                   </div>
                 </div>
