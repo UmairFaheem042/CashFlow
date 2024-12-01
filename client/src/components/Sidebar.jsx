@@ -4,17 +4,14 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const Sidebar = ({ tab }) => {
   const navigate = useNavigate();
-  // const [currTab, setCurrTab] = useState("home");
   const { userId } = useParams();
 
   function handleNavigation(changeTab) {
     setTimeout(() => {
-      navigate("/loading");
-      setTimeout(() => {
-        navigate(`/${changeTab}/${userId}`);
-      }, 500);
+      navigate(`/${changeTab}/${userId}`);
     }, 500);
   }
+
   return (
     <div>
       <aside className="border flex flex-row md:flex-col items-center md:justify-center md:gap-6 gap-10 p-2 md:p-4 rounded-lg h-min w-max">

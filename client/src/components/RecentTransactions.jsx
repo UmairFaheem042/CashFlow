@@ -1,9 +1,6 @@
 import React from "react";
-import { useParams } from "react-router-dom";
 
-const RecentTransactions = ({ recentTransactions, categories, cards }) => {
-  console.log(cards[0]?.transactions);
-
+const RecentTransactions = ({ recentTransactions, categories }) => {
   const uniqueTransactions = recentTransactions
     ?.filter(
       (transaction, index, self) =>

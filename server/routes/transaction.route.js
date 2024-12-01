@@ -5,12 +5,14 @@ const {
   getAllTransactions,
   deleteTransaction,
   getRecentTransactions,
+  getTransactionLimited,
 } = require("../controllers/transactionController");
 const { validateToken } = require("../middleware/validateToken");
 
 // These all routes will be validated first using validateToken
 router.post("/:userId/createTransaction", validateToken, createTransaction);
 router.get("/:userId/getAllTransactions", validateToken, getAllTransactions);
+router.get("/:userId/getTransactionsLimited", validateToken, getTransactionLimited)
 router.get("/:userId/getRecentTransactions", validateToken, getRecentTransactions);
 router.delete("/:userId/deleteTransaction/:transactionId", validateToken, deleteTransaction);
 

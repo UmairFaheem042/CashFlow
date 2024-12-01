@@ -22,7 +22,7 @@ app.use(cookieParser());
 app.use("/api/user", userRoutes);
 app.use("/api/transaction", transactionRoutes);
 app.use("/api/category", categoryRoutes);
-app.use("/api/card", cardRoutes);
+// app.use("/api/card", cardRoutes);
 
 connectDB();
 

@@ -46,13 +46,21 @@ import { Button } from "@/components/ui/button";
 import LoadingPage from "./LoadingPage";
 
 const AllTransactions = () => {
-  const navigate = useNavigate();
+  const { userId } = useParams();
 
   const [transactions, setTransactions] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  const { userId } = useParams();
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
 
   async function deleteTransaction(transactionId) {
     try {
@@ -88,53 +96,56 @@ const AllTransactions = () => {
   }
 
   useEffect(() => {
-    async function fetchAllTransaction() {
+    const fetchTransactions = async () => {
+      setLoading(true);
       try {
-        setLoading(true);
         const transactionsResponse = await fetch(
-          `http://localhost:3000/api/transaction/${userId}/getAllTransactions`,
-          {
-            credentials: "include",
-          }
+          `http://localhost:3000/api/transaction/${userId}/getTransactionsLimited?page=${currentPage}&limit=8`,
+          { credentials: "include" }
         );
+
         if (!transactionsResponse.ok) {
-          const errorData = await transactionsResponse.json();
-          console.error(
-            "Error fetching transactions:",
-            errorData || "Unknown error"
-          );
+          toast.error("Failed to fetch transactions");
           setLoading(false);
           return;
         }
-        const transactionsData = await transactionsResponse.json();
-        setTransactions(transactionsData.transactions);
 
-        // Fetch Categories
+        const transactionsData = await transactionsResponse.json();
+
+        if (transactionsData.success) {
+          setTransactions(transactionsData.transactions);
+          setTotalPages(transactionsData.totalPages || 1);
+        } else {
+          toast.error("Failed to load transactions");
+        }
+
         const categoriesResponse = await fetch(
           `http://localhost:3000/api/category/${userId}/getAllCategories`,
-          {
-            credentials: "include",
-          }
+          { credentials: "include" }
         );
+
         if (!categoriesResponse.ok) {
           const errorData = await categoriesResponse.json();
           console.error(
             "Error fetching categories:",
             errorData || "Unknown error"
           );
+          toast.error("Failed to fetch categories");
           setLoading(false);
           return;
         }
         const categoriesData = await categoriesResponse.json();
         setCategories(categoriesData.categories);
       } catch (error) {
-        console.error("Error:", error);
+        console.error("Error fetching transactions:", error);
+        toast.error("An error occurred while fetching transactions");
       } finally {
         setLoading(false);
       }
-    }
-    fetchAllTransaction();
-  }, []);
+    };
+
+    fetchTransactions();
+  }, [currentPage, userId]);
 
   const getCategoryIcon = (categoryId) => {
     const category = categories.find((cat) => cat._id === categoryId);
@@ -145,18 +156,18 @@ const AllTransactions = () => {
     return category ? `${category.name}` : "Others";
   };
 
+  console.log(totalPages);
   if (loading) return <LoadingPage />;
 
   return (
     <div className='mt-3 relative max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[calc(100dvh-5.1rem)] flex-1 flex md:flex-row flex-col items-center md:items-start gap-6 md:gap-6 pb-10"'>
       <Sidebar tab={"transactions"} />
       <main className="flex flex-col w-full flex-1 md:min-h-[calc(100dvh-6rem)]">
-        {/* <main className="bg-slate-400 flex min-h-[calc(100dvh-6rem)] flex-col w-full flex-1"> */}
         <header className="flex gap-2 sm:flex-row flex-col justify-between md:items-center w-full">
           <h1 className="text-4xl font-semibold">All Transactions</h1>
         </header>
 
-        <div className="hidden md:block flex-1 border-2 rounded-lg mt-6 overflow-y-scroll max-h-[70vh]">
+        <div className="hidden md:block   border-2 rounded-lg mt-6 hide-scrollbar  overflow-y-scroll max-h-[70vh]">
           <Table className="">
             <TableHeader>
               <TableRow>
@@ -166,7 +177,7 @@ const AllTransactions = () => {
                 <TableHead className="text-center">Amount</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody className="">
               {transactions?.map((item) => (
                 <TableRow key={item._id}>
                   <TableCell className="font-medium text-left">
@@ -309,22 +320,44 @@ const AllTransactions = () => {
           ))}
         </div>
 
-        <Pagination className="mt-2">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious href="#" />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">1</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext href="#" />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+        {totalPages > 1 && (
+          <Pagination className="mt-4">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={handlePreviousPage}
+                  disabled={currentPage === 1}
+                  className={`${
+                    currentPage !== 1
+                      ? "cursor-pointer"
+                      : "cursor-not-allowed hover:bg-transparent"
+                  }`}
+                />
+              </PaginationItem>
+              {[...Array(totalPages)].map((_, index) => (
+                <PaginationItem key={index}>
+                  <PaginationLink
+                    onClick={() => setCurrentPage(index + 1)}
+                    className={currentPage === index + 1 ? "bg-gray-100" : ""}
+                  >
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                  className={`${
+                    currentPage !== totalPages
+                      ? "cursor-pointer"
+                      : "cursor-not-allowed hover:bg-transparent"
+                  }`}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
       </main>
       <ToastContainer />
     </div>

@@ -5,22 +5,13 @@ const Card = require("../models/card.model");
 
 exports.createTransaction = async (req, res) => {
   const { userId } = req.params;
-  const { category, amount, description, transType, date, time, cardId } =
-    req.body;
+  const { category, amount, description, transType, date, time } = req.body;
   try {
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
-      });
-    }
-
-    const card = await Card.findById(cardId);
-    if (!card) {
-      return res.status(404).json({
-        success: false,
-        message: "Card not found",
       });
     }
 
@@ -38,7 +29,6 @@ exports.createTransaction = async (req, res) => {
 
     const transaction = await Transaction.create({
       userId,
-      cardId,
       category: categoryDoc._id,
       amount: parsedAmount,
       description,
@@ -49,9 +39,6 @@ exports.createTransaction = async (req, res) => {
 
     user.transactions.push(transaction._id);
     await user.save();
-
-    card.transactions.push(transaction._id);
-    await card.save();
 
     categoryDoc.transactions.push(transaction._id);
     await categoryDoc.save();
@@ -71,7 +58,6 @@ exports.createTransaction = async (req, res) => {
 };
 
 exports.getAllTransactions = async (req, res) => {
-  // fetch transactions for a particular card
   const { userId } = req.params;
   try {
     const user = await User.findById(userId);
@@ -88,6 +74,45 @@ exports.getAllTransactions = async (req, res) => {
       success: true,
       message: "Transactions retrieved successfully",
       transactions,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching transactions",
+      error: error.message,
+    });
+  }
+};
+
+exports.getTransactionLimited = async (req, res) => {
+  const { userId } = req.params;
+  const { page = 1, limit = 8 } = req.query;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const skip = (page - 1) * limit;
+
+    const transactions = await Transaction.find({ userId })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const totalTransactions = await Transaction.countDocuments({ userId });
+
+    res.status(200).json({
+      success: true,
+      message: "Transactions retrieved successfully",
+      transactions,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(totalTransactions / limit),
+      totalTransactions,
     });
   } catch (error) {
     res.status(500).json({
@@ -144,20 +169,6 @@ exports.deleteTransaction = async (req, res) => {
         message: "Transaction not found",
       });
     }
-
-    // const card = await Card.findById(userId);
-    // if (!card) {
-    //   return res.status(404).json({
-    //     success: false,
-    //     message: "Card not found",
-    //   });
-    // }
-
-    await Card.findByIdAndUpdate(
-      transaction.cardId,
-      { $pull: { transactions: transactionId } },
-      { new: true }
-    );
 
     await Category.findByIdAndUpdate(
       transaction.category, // Use the category field from the transaction
