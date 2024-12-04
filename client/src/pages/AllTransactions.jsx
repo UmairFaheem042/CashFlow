@@ -64,7 +64,7 @@ const AllTransactions = () => {
 
   async function deleteTransaction(transactionId) {
     try {
-      setLoading(true);
+      // setLoading(true);
       setTransactions((prevTransactions) =>
         prevTransactions.filter(
           (transaction) => transaction.id !== transactionId
@@ -84,7 +84,9 @@ const AllTransactions = () => {
         throw new Error(response.statusText);
       }
 
-      const data = await response.json();
+      window.location.reload();
+
+      // const data = await response.json();
 
       toast.success("Transaction Deleted");
     } catch (error) {
@@ -320,44 +322,44 @@ const AllTransactions = () => {
           ))}
         </div>
 
-        {totalPages > 1 && (
-          <Pagination className="mt-4">
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={handlePreviousPage}
-                  disabled={currentPage === 1}
-                  className={`${
-                    currentPage !== 1
-                      ? "cursor-pointer"
-                      : "cursor-not-allowed hover:bg-transparent"
-                  }`}
-                />
+        {/* {totalPages > 1 && ( */}
+        <Pagination className="mt-4">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
+                className={`${
+                  currentPage !== 1
+                    ? "cursor-pointer"
+                    : "cursor-not-allowed hover:bg-transparent"
+                }`}
+              />
+            </PaginationItem>
+            {[...Array(totalPages)].map((_, index) => (
+              <PaginationItem key={index}>
+                <PaginationLink
+                  onClick={() => setCurrentPage(index + 1)}
+                  className={currentPage === index + 1 ? "bg-gray-100" : ""}
+                >
+                  {index + 1}
+                </PaginationLink>
               </PaginationItem>
-              {[...Array(totalPages)].map((_, index) => (
-                <PaginationItem key={index}>
-                  <PaginationLink
-                    onClick={() => setCurrentPage(index + 1)}
-                    className={currentPage === index + 1 ? "bg-gray-100" : ""}
-                  >
-                    {index + 1}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-              <PaginationItem>
-                <PaginationNext
-                  onClick={handleNextPage}
-                  disabled={currentPage === totalPages}
-                  className={`${
-                    currentPage !== totalPages
-                      ? "cursor-pointer"
-                      : "cursor-not-allowed hover:bg-transparent"
-                  }`}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        )}
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                className={`${
+                  currentPage !== totalPages
+                    ? "cursor-pointer"
+                    : "cursor-not-allowed hover:bg-transparent"
+                }`}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+        {/* )} */}
       </main>
       <ToastContainer />
     </div>

@@ -14,9 +14,10 @@ const RecentTransactions = ({ recentTransactions, categories }) => {
   };
 
   return (
-    <div className="w-full border rounded-md p-2 !h-full lg:w-[300px] flex-1 flex flex-col justify-between">
+    <div className="w-full border rounded-md p-2 md:min-h-[430px] !h-full lg:w-[300px] flex-1 flex flex-col justify-between">
       <h1 className="text-lg font-bold">Recent Transactions</h1>
-      <ul className="mt-4 flex flex-col gap-3 overflow-y-scroll">
+      {uniqueTransactions.length === 0 && <p className="my-4 md:my-0 font-semibold text-gray-200 text-center text-3xl">No Transactions</p>}
+      <ul className="mt-4 flex flex-col gap-3 overflow-y-scroll hide-scrollbar">
         {uniqueTransactions?.map((item) => (
           <li key={item._id} className="flex justify-between items-center">
             <div>

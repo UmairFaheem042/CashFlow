@@ -13,15 +13,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import LoadingPage from "./LoadingPage";
 
 const Settings = () => {
-  const navigate = useNavigate();
-
   const [icon, setIcon] = useState("");
   const [name, setName] = useState("");
-  const [creating, setCreating] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const [categories, setCategories] = useState([]);
-  
+
   const { userId } = useParams();
 
   async function handleSubmitCategory(e) {
@@ -56,6 +53,29 @@ const Settings = () => {
       }
     } catch (error) {
       console.error("Error creating category:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function deleteCategory(categoryId) {
+    try {
+      console.log(categoryId);
+      // return;
+      const response = await fetch(
+        `http://localhost:3000/api/category/${userId}/deleteCategory/${categoryId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
+      if (!response.ok) {
+        return;
+      }
+      window.location.reload();
+      console.log("Category Deleted Successfully");
+    } catch (error) {
+      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -174,16 +194,21 @@ const Settings = () => {
               categories?.map((item) => (
                 <div
                   key={item._id}
-                  className="min-w-[150px] bg-gray-100 cursor-pointer rounded-md py-4 px-2  flex flex-col gap-1 items-center"
+                  className="min-w-[170px] bg-gray-100 rounded-md py-0 px-0  flex flex-col gap-2 items-center"
                 >
-                  <span className="text-sm">{item.name}</span>
-                  <span className="text-3xl">{item.icon}</span>
+                  <div className="flex items-center pt-4 justify-center  w-full">
+                    <span className="text-3xl">{item.icon}</span>
+                    <span className="text-sm">{item.name}</span>
+                  </div>
+                  <Button
+                    label="Delete"
+                    className="bg-gray-100 rounded-none w-full text-gray-300 p-0 hover:text-black"
+                    onClick={() => deleteCategory(item._id)}
+                  />
                 </div>
               ))}
           </div>
         </div>
-
-        
       </main>
     </div>
   );

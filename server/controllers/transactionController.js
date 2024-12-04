@@ -135,7 +135,7 @@ exports.getRecentTransactions = async (req, res) => {
     }
     const transactions = await Transaction.find({ userId })
       .sort({ createdAt: -1 })
-      .limit(5);
+      .limit(8);
 
     res.status(200).json({
       success: true,

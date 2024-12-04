@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Button from "./Button";
 import { motion } from "framer-motion";
 import { ToastContainer, toast } from "react-toastify";
@@ -8,6 +8,8 @@ import "react-toastify/dist/ReactToastify.css";
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(null);
+  const navigate = useNavigate();
+  const { userId } = useParams();
 
   const handleLogout = async () => {
     try {
@@ -28,6 +30,14 @@ const Header = () => {
     }
   };
 
+  const handleLogoClick = () => {
+    if (isLoggedIn) {
+      navigate(`/dashboard/${userId}`);
+    } else {
+      navigate("/");
+    }
+  };
+
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -40,7 +50,6 @@ const Header = () => {
         );
 
         if (response.ok) {
-          const data = await response.json();
           setIsLoggedIn(true);
         } else {
           setIsLoggedIn(false);
@@ -54,18 +63,15 @@ const Header = () => {
     checkAuth();
   }, []);
 
-  // if (isLoggedIn === null) {
-  //   return <div>Loading...</div>;
-  // }
-
   return (
     <header className="h-16">
       <div className="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          <div className="md:flex md:items-center md:gap-12">
-            <Link to="/" className="block ">
-              CashFlow
-            </Link>
+          <div
+            className="md:flex md:items-center md:gap-12 cursor-pointer"
+            onClick={handleLogoClick}
+          >
+            CashFlow
           </div>
 
           <div className="md:flex md:items-center md:gap-12">

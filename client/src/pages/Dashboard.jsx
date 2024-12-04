@@ -243,6 +243,7 @@ const Dashboard = () => {
 
   if (loading) return <LoadingPage />;
 
+
   return (
     <div className="my-3 relative max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[calc(100dvh-5.5rem)] flex-1 flex md:flex-row flex-col items-center md:items-start gap-6 md:gap-6 ">
       <Sidebar tab={"dashboard"} />
@@ -494,7 +495,7 @@ const Dashboard = () => {
         </div>
 
         {/* tabs */}
-        <div className="mt-6 flex items-center justify-between">
+        {/* <div className="mt-6 flex items-center justify-between">
           <ul className="text-lg flex items-center transition-all gap-2">
             <li
               className={`cursor-pointer min-w-[100px] px-2 py-1 text-center ${
@@ -521,11 +522,11 @@ const Dashboard = () => {
               Expense
             </li>
           </ul>
-        </div>
+        </div> */}
 
-        <div className="mt-3 h-full flex lg:flex-row flex-col gap-4 md:items-start lg:h-[350px]">
+        <div className="mt-3 h-full flex lg:flex-row flex-col gap-4 md:items-start lg:min-h-[430px]">
           {/* bar chart */}
-          <Visualization />
+          <Visualization categories={categories}/>
 
           {/* recent transactions */}
           <RecentTransactions
