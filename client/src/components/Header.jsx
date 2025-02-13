@@ -5,11 +5,10 @@ import { motion } from "framer-motion";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const Header = () => {
+const Header = ({ userId }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(null);
   const navigate = useNavigate();
-  const { userId } = useParams();
 
   const handleLogout = async () => {
     try {

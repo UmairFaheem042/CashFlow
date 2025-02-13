@@ -15,7 +15,6 @@ const App = () => {
   const location = useLocation();
   return (
     <>
-      {location.pathname !== "/loading" && <Header />}
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/sign-in" element={<AuthSignIn />} />
