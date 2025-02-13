@@ -1,6 +1,6 @@
 Screenshots:
 
-[text](README.md) ![text](01.png)
+![alt text](01.png)
 
 ----
 
