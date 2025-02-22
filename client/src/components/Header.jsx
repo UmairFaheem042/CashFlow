@@ -12,7 +12,7 @@ const Header = ({ userId }) => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/user/signout", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/api/user/signout`, {
         method: "POST",
         credentials: "include",
       });
@@ -41,7 +41,7 @@ const Header = ({ userId }) => {
     const checkAuth = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3000/api/user/check-auth",
+          `${import.meta.env.VITE_BACKEND_API}/api/user/check-auth`,
           {
             method: "GET",
             credentials: "include",

@@ -27,7 +27,7 @@ const Settings = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `http://localhost:3000/api/category/${userId}/createCategory`,
+        `${import.meta.env.VITE_BACKEND_API}/api/category/${userId}/createCategory`,
         {
           method: "POST",
           headers: {
@@ -64,7 +64,7 @@ const Settings = () => {
       console.log(categoryId);
       // return;
       const response = await fetch(
-        `http://localhost:3000/api/category/${userId}/deleteCategory/${categoryId}`,
+        `${import.meta.env.VITE_BACKEND_API}/api/category/${userId}/deleteCategory/${categoryId}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -86,7 +86,7 @@ const Settings = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `http://localhost:3000/api/category/${userId}/getAllCategories`,
+        `${import.meta.env.VITE_BACKEND_API}/api/category/${userId}/getAllCategories`,
         {
           credentials: "include",
         }

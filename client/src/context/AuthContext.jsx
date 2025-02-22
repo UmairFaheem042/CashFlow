@@ -9,14 +9,17 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/user/check-auth", {
-          method: "GET",
-          credentials: "include", // Include cookies for auth
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_API}/api/user/check-auth`,
+          {
+            method: "GET",
+            credentials: "include", // Include cookies for auth
+          }
+        );
 
         if (response.ok) {
           const data = await response.json(); // Assume response contains userId
-          console.log(data)
+          console.log(data);
           setIsAuthenticated(true);
           setUserId(data.user?._id);
         } else {

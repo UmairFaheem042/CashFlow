@@ -8,10 +8,13 @@ const ProtectedRoute = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/user/check-auth", {
-          method: "GET",
-          credentials: "include", // Send cookies
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_API}/api/user/check-auth`,
+          {
+            method: "GET",
+            credentials: "include", // Send cookies
+          }
+        );
 
         if (response.ok) {
           setIsAuthenticated(true);
@@ -28,7 +31,7 @@ const ProtectedRoute = () => {
   }, []);
 
   if (isAuthenticated === null) {
-    return <LoadingPage/>; 
+    return <LoadingPage />;
   }
 
   return isAuthenticated ? <Outlet /> : <Navigate to="/sign-in" replace />;

@@ -18,36 +18,38 @@ const AuthSignIn = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3000/api/user/signin", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_API}/api/user/signin`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+          credentials: "include",
+        }
+      );
 
-      if (response.ok) {
-        const data = await response.json();
-        toast.success(data.message);
-        setTimeout(() => {
-          navigate("/loading");
-          setTimeout(() => {
-            navigate(`/dashboard/${data.id}`);
-          }, 1000);
-        }, 500);
-      } else {
+      
+      if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message);
+      }
+      const data = await response.json();
+      console.log(data);
+      if (data.success) {
+        toast.success(data.message);
+        navigate(`/dashboard/${data.id}`);
       }
     } catch (error) {
       console.error("An error occurred:", error);
       toast.error(error.message);
     }
   }
+
   return (
     <>
       {location.pathname !== "/loading" && <Header />}

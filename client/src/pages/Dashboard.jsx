@@ -65,7 +65,7 @@ const Dashboard = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `http://localhost:3000/api/transaction/${userId}/createTransaction`,
+        `${import.meta.env.VITE_BACKEND_API}/api/transaction/${userId}/createTransaction`,
         {
           method: "POST",
           headers: {
@@ -104,7 +104,7 @@ const Dashboard = () => {
       setCreating(true);
       setLoading(true);
       const response = await fetch(
-        `http://localhost:3000/api/category/${userId}/createCategory`,
+        `${import.meta.env.VITE_BACKEND_API}/api/category/${userId}/createCategory`,
         {
           method: "POST",
           headers: {
@@ -143,7 +143,7 @@ const Dashboard = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `http://localhost:3000/api/category/${userId}/getAllCategories`,
+        `${import.meta.env.VITE_BACKEND_API}/api/category/${userId}/getAllCategories`,
         {
           credentials: "include",
         }
@@ -170,7 +170,7 @@ const Dashboard = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `http://localhost:3000/api/transaction/${userId}/getRecentTransactions`,
+        `${import.meta.env.VITE_BACKEND_API}/api/transaction/${userId}/getRecentTransactions`,
         {
           credentials: "include",
         }
@@ -197,7 +197,7 @@ const Dashboard = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `http://localhost:3000/api/transaction/${userId}/getAllTransactions`,
+        `${import.meta.env.VITE_BACKEND_API}/api/transaction/${userId}/getAllTransactions`,
         {
           credentials: "include",
         }

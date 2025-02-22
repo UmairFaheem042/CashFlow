@@ -22,7 +22,7 @@ const EnterOTP = () => {
     try {
       const email = localStorage.getItem("email");
       const response = await fetch(
-        "http://localhost:3000/api/user/verify-otp",
+        `${import.meta.env.VITE_BACKEND_API}/api/user/verify-otp`,
         {
           method: "POST",
           headers: {

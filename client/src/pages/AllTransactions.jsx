@@ -75,7 +75,7 @@ const AllTransactions = () => {
       );
 
       const response = await fetch(
-        `http://localhost:3000/api/transaction/${userId}/deleteTransaction/${transactionId}`,
+        `${import.meta.env.VITE_BACKEND_API}/api/transaction/${userId}/deleteTransaction/${transactionId}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -105,7 +105,7 @@ const AllTransactions = () => {
       setLoading(true);
       try {
         const transactionsResponse = await fetch(
-          `http://localhost:3000/api/transaction/${userId}/getTransactionsLimited?page=${currentPage}&limit=8`,
+          `${import.meta.env.VITE_BACKEND_API}/api/transaction/${userId}/getTransactionsLimited?page=${currentPage}&limit=8`,
           { credentials: "include" }
         );
 
@@ -125,7 +125,7 @@ const AllTransactions = () => {
         }
 
         const categoriesResponse = await fetch(
-          `http://localhost:3000/api/category/${userId}/getAllCategories`,
+          `${import.meta.env.VITE_BACKEND_API}/api/category/${userId}/getAllCategories`,
           { credentials: "include" }
         );
 
